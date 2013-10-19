@@ -21,7 +21,7 @@ class Process(Thread):
         self.main_semaphore = None # Se lo asigna el kelner
         self.semaphore      = Semaphore(0)
         self.next           = None # Siguiente proceso en la lista de prioridades
-        self.previous       = None # Anterior proceso en la lista de prioridades
+        self.previous       = None # Proceso anterior en la lista de prioridades
         
 
     def run(self):
