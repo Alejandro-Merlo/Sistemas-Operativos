@@ -5,10 +5,11 @@ Created on 19/10/2013
 '''
 from program import Program
 from process import Process
+from shell import Shell
 from scheduler import Scheduler
 from algorithm.prioritary_round_robin import PrioritaryRoundRobin
 from threading import Semaphore
-import time
+from time import sleep
 import random
 
 class Kernel():
@@ -16,7 +17,7 @@ class Kernel():
     def __init__(self):
         self.ready_list      = []
         self.ready_io        = []
-        self.scheduler       = Scheduler(PrioritaryRoundRobin(3))
+        self.scheduler       = Scheduler(PrioritaryRoundRobin(3, 5))
         self.process_running = None
         self.main_semaphore  = Semaphore()
         
@@ -30,57 +31,49 @@ class Kernel():
         process.state          = "Ready"
         process.main_semaphore = self.main_semaphore
         
-        self.ready_list.append(process)
-        self.scheduler.add_element(process)
+        self.scheduler.add_element(process, self.ready_io)
 
     def check_last_running(self):
         if self.process_running is not None:
             process = self.process_running
             if process.state is 'Ready':
-                self.ready_list.append(process)
-                self.scheduler.add_element(process)
+                self.scheduler.add_element(process, self.ready_io)
             if process.state is 'Ready I/O':
                 self.ready_io.append(process)
 
     def run_next_process(self):        
         self.check_last_running()
-        process = self.scheduler.choose_next()
+        process = self.scheduler.choose_next(self.ready_io)
         
         while process is None:
             print 'Esperando mas procesos...'
-            time.sleep(10)
-            process = self.scheduler.choose_next()
+            sleep(10)
+            process = self.scheduler.choose_next(self.ready_io)
             
-        self.ready_list.remove(process)
         self.process_running = process
         
         if process.isAlive():
             process.semaphore.release()
         else:
             process.start()
+            
+    def aging_processes(self):
+        self.scheduler.aging(self.ready_io)
+    
+    def update_processes(self):
+        self.scheduler.update(self.ready_io)
         
 def main():
-    program1 = Program("Program1", ['instruction1', 'instruction2', 'instruction3', 'instruction4'])
-    program2 = Program("Program2", ['instruction1', 'instruction2', 'instruction3'])
-    program3 = Program("Program3", ['instruction1', 'instruction2'])
-    program4 = Program("Program4", ['instruction1', 'instruction2', 'instruction3', 'instruction4', 'instruction5', 'instruction6', 'instruction7', 'instruction8'])
-    program5 = Program("Program5", ['instruction1', 'instruction2', 'instruction3', 'instruction4', 'instruction5', 'instruction6'])
-    program6 = Program("Program6", ['instruction1', 'instruction2', 'instruction3', 'instruction4'])
-    program7 = Program("Program7", ['instruction1', 'instruction2', 'instruction3', 'instruction4', 'instruction5', 'instruction6', 'instruction7', 'instruction8', 'instruction9', 'instruction10'])
-    
     kernel = Kernel()
-    kernel.load_program(program1)
-    kernel.load_program(program2)
-    kernel.load_program(program3)
-    kernel.load_program(program4)
-    kernel.load_program(program5)
-    kernel.load_program(program6)
-    kernel.load_program(program7)
+    shell = Shell(kernel)
+    shell.start()
     
     while True:
+        kernel.update_processes()
         kernel.main_semaphore.acquire()            
         kernel.run_next_process()
-        time.sleep(5)
+        kernel.aging_processes()
+        sleep(5)
 
 if __name__ == '__main__':
     main()

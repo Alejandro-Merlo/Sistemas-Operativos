@@ -6,7 +6,7 @@ Created on 19/10/2013
 from program import Program
 from threading import Thread
 from threading import Semaphore
-import time
+from time import sleep
 
 class Process(Thread):
     
@@ -17,6 +17,7 @@ class Process(Thread):
         self.state          = "Ready" # Estado del proceso (Ready, CPU, Ready I/O, I/O, Timeout, Finished)
         self.pc             = pc # Contador de programa en memoria
         self.quantum        = 0 # Se lo asigna el scheduler
+        self.aging          = 0 # Envejecimiento, se lo asigna el scheduler
         self.priority       = priority
         self.main_semaphore = None # Se lo asigna el kelner
         self.semaphore      = Semaphore(0)
@@ -41,7 +42,7 @@ class Process(Thread):
     def run_next_instruction(self, instruction):
         print self.program.name + ' ejecutando ' + instruction
         self.quantum = self.quantum - 1
-        time.sleep(1)
+        sleep(1)
 
     def perform_quantum_terminated(self):
         print self.program.name + ': quantum terminado, cede la CPU'
@@ -49,4 +50,4 @@ class Process(Thread):
         self.main_semaphore.release()
         self.semaphore.acquire()
         print self.program.name + ' continua con su ejecucion'
-        time.sleep(1)
+        sleep(1)
