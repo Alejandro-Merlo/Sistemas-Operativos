@@ -22,7 +22,7 @@ class PrioritaryRoundRobin(Algorithm):
         
     def sort(self, process):
         
-        if self.processes is []:
+        if self.processes == []:
             self.next_to_choose = process
             
         for current in self.processes:

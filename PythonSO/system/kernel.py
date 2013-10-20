@@ -46,16 +46,18 @@ class Kernel():
         self.check_last_running()
         process = self.scheduler.choose_next()
         
-        if process is None:
-            print 'Esperando mas procesos'
-        else:
-            self.ready_list.remove(process)
-            self.process_running = process
+        while process is None:
+            print 'Esperando mas procesos...'
+            time.sleep(10)
+            process = self.scheduler.choose_next()
+            
+        self.ready_list.remove(process)
+        self.process_running = process
         
-            if process.isAlive():
-                process.semaphore.release()
-            else:
-                process.start()
+        if process.isAlive():
+            process.semaphore.release()
+        else:
+            process.start()
         
 def main():
     program1 = Program("Program1", ['instruction1', 'instruction2', 'instruction3', 'instruction4'])
