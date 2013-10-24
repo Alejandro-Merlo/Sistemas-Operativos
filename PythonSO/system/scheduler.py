@@ -8,11 +8,11 @@ class Scheduler():
     def __init__(self, algorithm):
         self.algorithm = algorithm
 
-    def add_element(self, process, ready_queue):
-        self.algorithm.add(process, ready_queue)
+    def add_element(self, process):
+        self.algorithm.add(process)
 
-    def choose_next(self, ready_queue):
-        return self.algorithm.get(ready_queue)
+    def choose_next(self):
+        return self.algorithm.get()
 
     # Esto se ve caro, preguntar otras maneras de hacerlo
     def aging(self, processes):

@@ -12,9 +12,9 @@ class Algorithm():
         self.structure = structure
         
     @abstractmethod    
-    def add(self, process, ready_queue):
+    def add(self, process):
         pass
     
     @abstractmethod    
-    def get(self, ready_queue):
+    def get(self):
         pass

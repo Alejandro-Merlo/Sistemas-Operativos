@@ -15,60 +15,60 @@ class PrioritaryRoundRobin(Algorithm):
         self.quantum        = quantum
         self.aging          = aging
     
-    def add(self, process, ready_queue):
+    def add(self, process):
         self.structure.add(process)
-        self.sort(process, ready_queue)
+#         self.sort(process)
         
         process.quantum = self.quantum
         process.aging   = self.aging
         
-    def sort(self, process, ready_queue):
+#     def sort(self, process):
+#         
+#         if ready_queue == []:
+#             self.next_to_choose = process
+#             
+#         for current in ready_queue:
+#             if current.previous is None:
+#                 if current.priority > process.priority:
+#                     current.previous    = process
+#                     process.next        = current
+#                     self.next_to_choose = process
+#             else:
+#                 previous = current.previous
+#                 if current.priority > process.priority and previous.priority <= process.priority:
+#                     current.previous = process
+#                     previous.next    = process
+#                     process.previous = previous
+#                     process.next     = current
+#                     
+#             if current.next is None:
+#                 if current.priority <= process.priority:
+#                     current.next     = process
+#                     process.previous = current
+#             else:
+#                 nextt = current.next
+#                 if current.priority <= process.priority and nextt.priority > process.priority:
+#                     current.next     = process
+#                     nextt.previous   = process
+#                     process.previous = current
+#                     process.next     = nextt
+#                     
+#         ready_queue.append(process)
         
-        if ready_queue == []:
-            self.next_to_choose = process
-            
-        for current in ready_queue:
-            if current.previous is None:
-                if current.priority > process.priority:
-                    current.previous    = process
-                    process.next        = current
-                    self.next_to_choose = process
-            else:
-                previous = current.previous
-                if current.priority > process.priority and previous.priority <= process.priority:
-                    current.previous = process
-                    previous.next    = process
-                    process.previous = previous
-                    process.next     = current
-                    
-            if current.next is None:
-                if current.priority <= process.priority:
-                    current.next     = process
-                    process.previous = current
-            else:
-                nextt = current.next
-                if current.priority <= process.priority and nextt.priority > process.priority:
-                    current.next     = process
-                    nextt.previous   = process
-                    process.previous = current
-                    process.next     = nextt
-                    
-        ready_queue.append(process)
-        
-    def get(self, ready_queue):
-        if self.next_to_choose is not None:
-            process             = self.next_to_choose
-            self.next_to_choose = process.next
-            
-            if process.next is not None:
-                self.next_to_choose.previous = None
-                
-            process.next  = None
-            process.aging = self.aging
-            
-            ready_queue.remove(process)
-            self.structure.remove(process)
-            return process
+    def get(self):
+#         if self.next_to_choose is not None:
+#             process             = self.next_to_choose
+#             self.next_to_choose = process.next
+#             
+#             if process.next is not None:
+#                 self.next_to_choose.previous = None
+#                 
+#             process.next  = None
+#             process.aging = self.aging
+#             
+#             ready_queue.remove(process)
+#             self.structure.remove(process)
+#             return process
         return None
     
     def boost_priority(self, process):
