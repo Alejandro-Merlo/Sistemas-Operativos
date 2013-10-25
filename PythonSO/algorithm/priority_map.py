@@ -3,8 +3,7 @@ Created on 19/10/2013
 
 @author: Alejandro
 '''
-import random
-
+import random 
 class PriorityMap:
     
     def __init__(self, priorities_quant, aging_quant):
@@ -20,20 +19,25 @@ class PriorityMap:
             self.priorities[p] = new_dict
         
     def add(self, process):
-        # TODO: Pensar en la forma de recuperar prioridad de los procesos evitando guardarlo en la clase
-        new_priority = random.randint(0, self.max_priority - 1)
-        self.priorities[new_priority][0].append(process)
+        if process.priority is None:
+            process.set_priority(random.randint(0, self.max_priority - 1))
+        self.priorities[process.priority][0].append(process)
         
     def pop_next_to_execute(self):
+        process = None
         # Si la prioridad 0 con envejecimiento 0 esta vacia
         if not self.priorities[0][0]:
             # Busca en orden ascendente por el diccionario el proximo que no es vacio
             for p in range(1, self.max_priority):
                 for a in range(self.max_aging - 1, -1, -1):
                     if self.priorities[p][a]:
-                        return self.priorities[p][a].pop(0)
+                        process = self.priorities[p][a].pop(0)
+                        process.set_priority(p)
+                        return process
         else:
-            return self.priorities[0][0].pop(0)
+            process = self.priorities[0][0].pop(0)
+            process.set_priority(0)
+            return process
         # Si no encuentra nada devuelve nulo
         return None
     

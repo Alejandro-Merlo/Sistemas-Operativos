@@ -11,6 +11,7 @@ class FIFO(Algorithm):
         Algorithm.__init__(self, [])
         
     def add(self, process):
+        process.set_priority(0)
         self.structure.append(process)
         
     def get(self):

@@ -41,7 +41,7 @@ class CPU(Thread):
             self.assigned_pcb = None
 
     def execute_instruction(self, next_instruction):
-        print self.assigned_pcb.program.name + ' ejecutando en CPU'
+        print self.assigned_pcb.program.name + ' de prioridad ' + str(self.assigned_pcb.priority) + ' ejecutando en CPU'
         next_instruction.execute()
         if self.assigned_pcb.pc == len(self.assigned_pcb.program.instructions) - 1:
             print self.assigned_pcb.program.name + ' ha terminado su ejecucion'

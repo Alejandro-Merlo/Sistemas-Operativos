@@ -13,8 +13,8 @@ class PrioritaryRoundRobin(Algorithm):
         self.quantum        = quantum
     
     def add(self, process):
+        process.set_quantum(self.quantum)
         self.structure.add(process)
-        process.quantum = self.quantum
                 
     def get(self):
         pcb = self.structure.pop_next_to_execute()

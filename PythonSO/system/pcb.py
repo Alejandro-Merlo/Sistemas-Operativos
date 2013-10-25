@@ -11,4 +11,10 @@ class PCB():
         self.state    = "New" # Estado del proceso (Ready, CPU, Ready I/O, I/O, Timeout, Finished)
         self.pc       = 0
         self.quantum  = None # Se lo asigna el scheduler en caso de ser Round Robin
-        #self.priority = priority
+        self.priority = None # Se lo asigna el scheduler en caso de ser por prioridad
+        
+    def set_priority(self, priority):
+        self.priority = priority
+        
+    def set_quantum(self, quantum):
+        self.quantum = quantum
