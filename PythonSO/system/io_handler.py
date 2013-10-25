@@ -29,8 +29,8 @@ class IOHandler(Thread):
                 sleep(2)
                 if pcb.pc == len(pcb.program.instructions) - 1:
                     print pcb.program.name + ' ha terminado su ejecucion'
-                    self.kernel.kill_signal(pcb)
+                    self.kernel.io_kill_signal(pcb)
                 else:
                     pcb.pc = pcb.pc + 1
-                    self.kernel.ready_signal(pcb)
+                    self.kernel.io_ready_signal(pcb)
             sleep(3)

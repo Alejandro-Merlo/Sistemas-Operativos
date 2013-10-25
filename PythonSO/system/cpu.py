@@ -10,31 +10,43 @@ class CPU(Thread):
     
     def __init__(self, kernel, semaphore = None):
         Thread.__init__(self)
-        self.pcb       = None
-        self.kernel    = kernel
-        self.semaphore = semaphore
+        self.assigned_pcb = None
+        self.kernel       = kernel
+        self.semaphore    = semaphore
         
     def set_pcb(self, pcb):
-        self.pcb = pcb
-
-    def process_pcb(self):
-        next_instruction = self.pcb.program.instructions[self.pcb.pc]
-        if next_instruction.is_cpu():
-            print self.pcb.program.name + ' ejecutando en CPU'
-            next_instruction.execute()
-            if self.pcb.pc == len(self.pcb.program.instructions) - 1:
-                print self.pcb.program.name + ' ha terminado su ejecucion'
-                self.kernel.kill_signal(self.pcb)
-                self.pcb = None
-            else:
-                self.pcb.pc = self.pcb.pc + 1 # En memoria
-        else:
-            self.kernel.io_signal(self.pcb)
-            self.pcb = None
-            
+        self.assigned_pcb = pcb
             
     def run(self):
         while True:
-            if self.pcb is not None:
+            if self.assigned_pcb is not None:
                 self.process_pcb()
             sleep(2)
+
+    def process_pcb(self):
+        next_instruction = self.assigned_pcb.program.instructions[self.assigned_pcb.pc]
+        if next_instruction.is_cpu():
+            if self.assigned_pcb.quantum is None:
+                self.execute_instruction(next_instruction)
+            else:
+                if self.assigned_pcb.quantum == 0:
+                    print self.assigned_pcb.program.name + ' ha terminado su quantum, cede la CPU'
+                    self.kernel.ready_signal(self.assigned_pcb)
+                    self.assigned_pcb = None
+                else:
+                    self.assigned_pcb.quantum -= 1
+                    self.execute_instruction(next_instruction)
+        else:
+            self.kernel.io_signal(self.assigned_pcb)
+            self.assigned_pcb = None
+
+    def execute_instruction(self, next_instruction):
+        print self.assigned_pcb.program.name + ' ejecutando en CPU'
+        next_instruction.execute()
+        if self.assigned_pcb.pc == len(self.assigned_pcb.program.instructions) - 1:
+            print self.assigned_pcb.program.name + ' ha terminado su ejecucion'
+            self.kernel.kill_signal(self.assigned_pcb)
+            self.assigned_pcb = None
+        else:
+            self.assigned_pcb.pc = self.assigned_pcb.pc + 1 # En memoria
+            
