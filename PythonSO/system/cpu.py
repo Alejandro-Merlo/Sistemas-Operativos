@@ -3,18 +3,18 @@ Created on 21/10/2013
 
 @author: Alejandro
 '''
-#from memory import Memory
+from memory import MMU
 from threading import Thread
 from time import sleep
 
 class CPU(Thread):
     
-    def __init__(self, kernel, semaphore = None):
+    def __init__(self, kernel, semaphore = None, algorithm):
         Thread.__init__(self)
         self.assigned_pcb = None
         self.kernel       = kernel
         self.semaphore    = semaphore
-        #self.memory       = Memory(algorithm)
+        self.memory       = MMU(algorithm)
         
     def set_pcb(self, pcb):
         self.assigned_pcb = pcb

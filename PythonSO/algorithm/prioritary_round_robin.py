@@ -10,7 +10,7 @@ class PrioritaryRoundRobin(Algorithm):
     
     def __init__(self, quantum, priorities_quant, aging_quant):
         Algorithm.__init__(self, PriorityMap(priorities_quant, aging_quant))
-        self.quantum        = quantum
+        self.quantum = quantum
     
     def add(self, process):
         process.set_quantum(self.quantum)
