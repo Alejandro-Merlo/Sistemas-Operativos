@@ -6,12 +6,12 @@ Created on 19/10/2013
 from program import Program
 from instruction_io import InstructionIO
 from instruction_cpu import InstructionCPU
-from algorithm.fifo import FIFO
-from algorithm.prioritary_round_robin import PrioritaryRoundRobin
+from scheduler.fifo import FIFO
+from scheduler.prioritary_round_robin import PrioritaryRoundRobin
 from cpu import CPU
 from io_handler import IOHandler
 from pcb import PCB
-from scheduler import Scheduler
+from scheduler.scheduler import Scheduler
 from time import sleep
 from threading import Semaphore
 

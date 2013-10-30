@@ -3,7 +3,7 @@ Created on 21/10/2013
 
 @author: Alejandro
 '''
-from memory import MMU
+from memory.mmu import MMU
 from threading import Thread
 from time import sleep
 
