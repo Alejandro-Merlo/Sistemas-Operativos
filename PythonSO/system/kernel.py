@@ -29,13 +29,14 @@ class Kernel():
         self.io_handler.start()
     
     def load(self, program):
-        process                = PCB(program, self.global_id)
-        self.global_id         = self.global_id + 1
-        process.state          = "Ready"
+        process        = PCB(program, self.global_id)
+        self.memory.load(process)
+        self.global_id = self.global_id + 1
+        process.state  = "Ready"
         self.ready_list.append(process)
         self.scheduler.add_element(process)
         
-        
+    #TODO: Hacer IRQ
     def io_signal(self, pcb):
         self.io_handler.add(pcb)
         self.cpu_semaphore.release()
