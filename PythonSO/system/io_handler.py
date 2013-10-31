@@ -13,24 +13,25 @@ class IOHandler(Thread):
         self.kernel   = kernel
         self.ready_io = []
         
-    def add(self, pcb):
+    def add(self, pcb, instruction):
         pcb.state = 'Ready I/O'
         print pcb.program.name + ' esperando I/O'
-        self.ready_io.append(pcb)
+        self.ready_io.append((pcb, instruction))
         
     def run(self):
         while True:
             if self.ready_io != []:
-                pcb       = self.ready_io.pop(0)
-                pcb.state = 'Running I/O'
-                print pcb.program.name + ' ejecutando I/O'
-                instruction = pcb.program.instructions[pcb.pc]
-                instruction.execute()
+                next_pair          = self.ready_io.pop(0)
+                next_pair[0].state = 'Running I/O'
+                print next_pair[0].program.name + ' ejecutando I/O'
+                next_pair[1].execute()
                 sleep(2)
-                if pcb.pc == len(pcb.program.instructions) - 1:
-                    print pcb.program.name + ' ha terminado su ejecucion'
-                    self.kernel.io_kill_signal(pcb)
+                if self.is_the_last(next_pair):
+                    print next_pair[0].program.name + ' ha terminado su ejecucion'
+                    self.kernel.io_kill_signal(next_pair[0])
                 else:
-                    pcb.pc = pcb.pc + 1
-                    self.kernel.io_ready_signal(pcb)
+                    self.kernel.io_ready_signal(next_pair[0])
             sleep(3)
+            
+    def is_the_last(self, pair):
+        return pair[0].program.instructions[len(pair[0].program.instructions) - 1] == pair[1]

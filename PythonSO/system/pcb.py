@@ -18,3 +18,6 @@ class PCB():
         
     def set_quantum(self, quantum):
         self.quantum = quantum
+        
+    def compute_pc(self, shift):
+        return self.base_direction + shift
