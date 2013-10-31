@@ -8,44 +8,25 @@ from block import Block
 
 class MVT(Algorithm):
     
-    def __init__(self, memory_size):
-        self.memory_size = memory_size
-        self.full        = {} # Mapeo de bloques llenos: PCB -> Bloque
-        self.empty       = [Block(0, memory_size - 1)]
+    def __init__(self, memory_size, selection_method):
+        self.memory_size      = memory_size
+        self.selection_method = selection_method
+        self.full             = {} # Mapeo de bloques llenos: PCB -> Bloque
+        self.empty            = [Block(0, memory_size - 1)]
 
     def load(self, pcb, physical_memory):
-        
-        block_to_delete = None
-        #free_space      = 0
-        for block in self.empty:
-            #free_space += block.size
-            if self.is_available(pcb, block):
-                block_to_delete    = block
-                pcb.base_direction = block.start
-                self.load_physical(pcb, physical_memory)
-                self.divide(pcb, block)
-                break
-        
-        if block_to_delete is not None:
-            self.empty.remove(block_to_delete)
+        result = self.selection_method.select_for(self, pcb)
+        if result is not None:
+            pcb.base_direction = result.start
+            self.load_physical(pcb, physical_memory)
+            self.divide(pcb, result)
+            self.empty.remove(result)
+        elif self.free_space() >= len(pcb.program.instructions):
+            self.do_shift(self)
+            # Aca iria el corrimiento de huecos libres, lo hace el strategy o la clase?
         else:
             print 'No hay espacio en memoria'
-            # Aca va el corrimiento de huecos libres (Strategy pattern de cada ajuste)
-                
-    def load_physical(self, pcb, physical_memory):
-        direction = pcb.base_direction
-        for instruction in pcb.program.instructions:
-            physical_memory[direction] = instruction
-            direction += 1
-
-    def is_available(self, pcb, block):
-        return block.size >= len(pcb.program.instructions)
-
-    def divide(self, pcb, block):
-        new_full_block  = Block(block.start, block.start + len(pcb.program.instructions) - 1)
-        new_empty_block = Block(block.start + len(pcb.program.instructions), block.end)
-        self.full[pcb]  = new_full_block
-        self.empty.append(new_empty_block)
+            # Aca iria roll in roll out?
         
     def unload(self, pcb, physical_memory):
         block = self.full[pcb]
@@ -53,29 +34,65 @@ class MVT(Algorithm):
         self.free(block)
         self.unload_physical(pcb, physical_memory)
         pcb.base_direction = None
-            
-    def unload_physical(self, pcb, physical_memory):
-        for direction in range(0, len(pcb.program.instructions)):
-            del physical_memory[pcb.base_direction + direction]
-            
-    def free(self, block):
-        linked = False
-        for e_block in self.empty:
-            if e_block.start == block.end:
-                linked = True
-                e_block.start = block.start
-                break
-            elif e_block.end == block.start:
-                linked = True
-                e_block.end = block.end
-                break
-        
-        if not linked:
-            block.shift = 0
-            self.empty.append(block)
         
     def fetch(self, pcb, physical_memory):
         block  = self.full[pcb]
         result = physical_memory[pcb.compute_pc(block.shift)]
         block.shift += 1
         return result
+            
+    def free_space(self):
+        space = 0
+        for block in self.empty:
+            space += block.size()
+        return space
+                
+    def load_physical(self, pcb, physical_memory):
+        direction = pcb.base_direction
+        for instruction in pcb.program.instructions:
+            physical_memory[direction] = instruction
+            direction += 1
+
+    def divide(self, pcb, block):
+        # Divido el bloque vacio en uno lleno y en uno posible con el espacio restante
+        new_full_block = Block(block.start, block.start + len(pcb.program.instructions) - 1)
+        if new_full_block.size() < block.size():
+            new_empty_block = Block(block.start + len(pcb.program.instructions), block.end)
+        self.full[pcb] = new_full_block
+        self.empty.append(new_empty_block)
+            
+    def unload_physical(self, pcb, physical_memory):
+        for direction in range(0, len(pcb.program.instructions)):
+            del physical_memory[pcb.base_direction + direction]
+            
+    def free(self, block):
+        # Se asume que no hay bloques vacios con el rango del recientemente liberado
+        # por logica del mismo algoritmo
+        nextt    = None
+        previous = None
+        for e_block in self.empty:
+            if e_block.start - 1 == block.end:
+                nextt = e_block
+            elif e_block.end + 1 == block.start:
+                previous = e_block
+        
+        if nextt is None:
+            if previous is None:
+                # Si el bloque liberado no se puede fusionar con ningun otro
+                # bloque vacio lo agrego a la lista 
+                block.shift = 0
+                self.empty.append(block)
+            else:
+                # Si el sector siguiente al final del bloque vacio
+                # concuerda con el comienzo del bloque liberado los fusiono
+                previous.end = block.end
+        elif previous is None:
+            # Si el sector anterior al comienzo del bloque vacio
+            # concuerda con el final del bloque liberado los fusiono
+            nextt.start = block.start
+        else:
+            # Si ambos extremos del bloque liberado se pueden fusionar
+            # elijo uno de los bloques adyacentes y lo fusiono con los otros dos
+            # eliminando de la lista al otro bloque adyacente
+            previous.end = nextt.end
+            self.empty.remove(nextt)
