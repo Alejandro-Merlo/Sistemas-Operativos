@@ -7,8 +7,8 @@ from block_selection_strategy import BlockSelectionStrategy
 
 class FirstFit(BlockSelectionStrategy):
     
-    def select(self, mvt, pcb):
+    def select_for(self, mvt, pcb):
         for block in mvt.empty:
-            if self.is_suitable(pcb, block):
+            if self._is_suitable(pcb, block):
                 return block
         return None

@@ -12,7 +12,7 @@ class MVT(Algorithm):
         self.memory_size      = memory_size
         self.selection_method = selection_method
         self.full             = {} # Mapeo de bloques llenos: PCB -> Bloque
-        self.empty            = [Block(0, memory_size - 1)]
+        self.empty            = [Block(0, memory_size - 1)] # Lista de bloques vacios ordenada
 
     def load(self, pcb, physical_memory):
         result = self.selection_method.select_for(self, pcb)
@@ -20,10 +20,8 @@ class MVT(Algorithm):
             pcb.base_direction = result.start
             self.load_physical(pcb, physical_memory)
             self.divide(pcb, result)
-            self.empty.remove(result)
         elif self.free_space() >= len(pcb.program.instructions):
             self.do_shift(self)
-            # Aca iria el corrimiento de huecos libres, lo hace el strategy o la clase?
         else:
             print 'No hay espacio en memoria'
             # Aca iria roll in roll out?
@@ -33,13 +31,22 @@ class MVT(Algorithm):
         del self.full[pcb]
         self.free(block)
         self.unload_physical(pcb, physical_memory)
-        pcb.base_direction = None
-        
+        pcb.base_direction = None        
+
     def fetch(self, pcb, physical_memory):
         block  = self.full[pcb]
-        result = physical_memory[pcb.compute_pc(block.shift)]
+        result = (self._is_the_last_instruction(pcb, block) , physical_memory[pcb.compute_pc(block.shift)])
         block.shift += 1
         return result
+
+    def _is_the_last_instruction(self, pcb, block):
+        return block.shift + 1 == len(pcb.program.instructions)
+    
+    def do_shift(self):
+        for e_block in self.empty:
+            for f_block in self.full:
+                
+                None
             
     def free_space(self):
         space = 0
@@ -54,45 +61,46 @@ class MVT(Algorithm):
             direction += 1
 
     def divide(self, pcb, block):
-        # Divido el bloque vacio en uno lleno y en uno posible con el espacio restante
-        new_full_block = Block(block.start, block.start + len(pcb.program.instructions) - 1)
-        if new_full_block.size() < block.size():
-            new_empty_block = Block(block.start + len(pcb.program.instructions), block.end)
-        self.full[pcb] = new_full_block
-        self.empty.append(new_empty_block)
+        # Contemplo el caso en que el nuevo bloque lleno no alcanza a
+        # cubrir todo el bloque vacio y el caso en que si alcanza a cubrirlo.
+        # En ambos casos reutilizo la informacion del bloque vacio.
+        new_block_size = len(pcb.program.instructions) - 1
+        if new_block_size < block.size():
+            new_full_block = Block(block.start, block.start + new_block_size, block.previous, block, False)
+            if block.previous is not None:
+                block.previous.next = new_full_block
+            block.start += new_block_size + 1
+            block.previous = new_full_block
+            self.full[pcb] = new_full_block
+        else:
+            self.full[pcb] = block
+            block.is_empty = False
+            self.empty.remove(block)
             
     def unload_physical(self, pcb, physical_memory):
         for direction in range(0, len(pcb.program.instructions)):
             del physical_memory[pcb.base_direction + direction]
             
     def free(self, block):
-        # Se asume que no hay bloques vacios con el rango del recientemente liberado
-        # por logica del mismo algoritmo
-        nextt    = None
-        previous = None
-        for e_block in self.empty:
-            if e_block.start - 1 == block.end:
-                nextt = e_block
-            elif e_block.end + 1 == block.start:
-                previous = e_block
-        
-        if nextt is None:
-            if previous is None:
-                # Si el bloque liberado no se puede fusionar con ningun otro
-                # bloque vacio lo agrego a la lista 
-                block.shift = 0
+        if block.next is None or not block.next.is_empty:
+            if block.previous is None or not block.previous.is_empty:
+                # Ya sea que no tenga ni anterior ni siguiente o que, si los tiene, esten llenos
+                # lo agrego directamente a la lista vacia
+                block.shift    = 0
+                block.is_empty = True
                 self.empty.append(block)
             else:
-                # Si el sector siguiente al final del bloque vacio
-                # concuerda con el comienzo del bloque liberado los fusiono
-                previous.end = block.end
-        elif previous is None:
-            # Si el sector anterior al comienzo del bloque vacio
-            # concuerda con el final del bloque liberado los fusiono
-            nextt.start = block.start
+                # En caso de que el siguiente no exista o que este lleno, no importa el caso
+                # del anterior lo fusiono con este ultimo
+                block.previous.end  = block.end
+                block.previous.next = block.next
+        elif block.previous is None or not block.previous.is_empty:
+            # En caso de que el anterior no exista o que este lleno, no importa el caso
+            # del siguiente lo fusiono con este ultimo
+            block.next.start    = block.start
+            block.next.previous = block.previous
         else:
-            # Si ambos extremos del bloque liberado se pueden fusionar
-            # elijo uno de los bloques adyacentes y lo fusiono con los otros dos
-            # eliminando de la lista al otro bloque adyacente
-            previous.end = nextt.end
-            self.empty.remove(nextt)
+            # Finalmente, ambos estan vacios por lo que fusiono los tres bloques
+            block.previous.end  = block.next.end
+            block.previous.next = block.next.next
+            self.empty.remove(block.next)

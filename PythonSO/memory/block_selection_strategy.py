@@ -12,5 +12,5 @@ class BlockSelectionStrategy():
     def select_for(self, mvt, pcb):
         pass
     
-    def is_suitable(self, pcb, block):
+    def _is_suitable(self, pcb, block):
         return block.size() >= len(pcb.program.instructions)

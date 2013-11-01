@@ -17,6 +17,9 @@ from threading import Semaphore
 from memory.mmu import MMU
 from memory.mvt import MVT
 from irq import IRQ
+from memory.first_fit import FirstFit
+from memory.best_fit import BestFit
+from memory.worst_fit import WorstFit
 
 class Kernel():
     
@@ -68,7 +71,7 @@ class Kernel():
         self.irq.cpu_ready_signal(self, pcb)
         
 def main():
-    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MVT(16) , Semaphore())
+    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MVT(16, FirstFit()) , Semaphore())
     program1 = Program('Wine', [InstructionCPU('CPU1'), InstructionIO('IO1'), InstructionCPU('CPU2')])
     program2 = Program('Eclipse', [InstructionIO('IO1'), InstructionCPU('CPU1'), InstructionCPU('CPU2')])
     program3 = Program('Thor', [InstructionCPU('CPU1'), InstructionCPU('CPU2'), InstructionIO('IO1')])
