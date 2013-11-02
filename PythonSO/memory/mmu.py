@@ -9,6 +9,9 @@ class MMU():
         self.physical_memory = {} # Memoria fisica: Direccion -> Valor
         self.logical_memory  = logical_memory # Memoria logica (Solo MVT por ahora)
         
+    def can_load(self, pcb):
+        return self.logical_memory.can_load(pcb)
+        
     def load(self, pcb):
         print pcb.program.name + ' alocandose en memoria'
         self.logical_memory.load(pcb, self.physical_memory)

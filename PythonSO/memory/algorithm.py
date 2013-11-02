@@ -9,6 +9,10 @@ class Algorithm():
     __metaclass__ = ABCMeta
     
     @abstractmethod
+    def can_load(self, pcb):
+        pass
+    
+    @abstractmethod
     def load(self, pcb, physical_memory):
         pass
     

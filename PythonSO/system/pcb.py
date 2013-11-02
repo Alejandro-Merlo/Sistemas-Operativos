@@ -21,3 +21,6 @@ class PCB():
         
     def compute_pc(self, shift):
         return self.base_direction + shift
+    
+    def size_in_memory(self):
+        return len(self.program.instructions)

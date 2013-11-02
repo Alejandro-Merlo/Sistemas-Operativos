@@ -8,12 +8,11 @@ from time import sleep
 
 class CPU(Thread):
     
-    def __init__(self, kernel, memory, semaphore = None):
+    def __init__(self, kernel, memory):
         Thread.__init__(self)
-        self.assigned_pcb       = None
-        self.kernel             = kernel
-        self.kernel_waiting_cpu = semaphore
-        self.memory             = memory
+        self.assigned_pcb = None
+        self.kernel       = kernel
+        self.memory       = memory
         
     def set_pcb(self, pcb):
         self.assigned_pcb = pcb
