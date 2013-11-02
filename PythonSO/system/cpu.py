@@ -21,7 +21,7 @@ class CPU(Thread):
         while True:
             if self.assigned_pcb is not None:
                 self.process_pcb()
-            sleep(3)
+            sleep(1)
 
     def process_pcb(self):
         next_instruction = self.memory.fetch(self.assigned_pcb)

@@ -5,6 +5,8 @@ Created on 20/10/2013
 '''
 from threading import Thread
 from program import Program
+from instruction_cpu import InstructionCPU
+from instruction_io import InstructionIO
 import random
 from time import sleep
 
@@ -20,10 +22,13 @@ class Shell(Thread):
         for e in range(1, 20):
             instructions = []
             
-            for i in range(1, random.randint(3, 10)):
-                instructions.append('instruction' + str(i))
+            for i in range(1, random.randint(3, 6)):
+                instructions.append(InstructionCPU('CPU' + str(i)))
+                
+            for i in range(1, random.randint(2, 3)):
+                instructions.append(InstructionIO('IO' + str(i)))
                 
             new_program = Program("Program" + str(e), instructions)
-            self.kernel.load_program(new_program)
+            self.kernel.load(new_program)
             #number = number + 1
-            sleep(random.randint(3, 10))
+            sleep(random.randint(5, 10))

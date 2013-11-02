@@ -28,7 +28,7 @@ class MVT(Algorithm):
         if result is not None:
             self._load_result(pcb, physical_memory, result)
         else:
-            self.do_shift(self, physical_memory)
+            self.do_shift(physical_memory)
             self._load_result(pcb, physical_memory, self.empty[0])
 
     def _load_result(self, pcb, physical_memory, result):
@@ -100,7 +100,7 @@ class MVT(Algorithm):
             if block.previous is None or (not block.previous.is_empty and self._are_previous_full(block.previous)):
                 return block
             
-    def _are_all_full(self, block):
+    def _are_previous_full(self, block):
         previous = block.previous
         while previous is not None:
             if previous.is_empty:

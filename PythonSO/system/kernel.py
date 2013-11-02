@@ -20,6 +20,7 @@ from irq import IRQ
 from memory.first_fit import FirstFit
 from memory.best_fit import BestFit
 from memory.worst_fit import WorstFit
+from shell import Shell
 
 class Kernel():
     
@@ -36,17 +37,23 @@ class Kernel():
         self.cpu.start()
         self.io_handler.start()
     
+    
     def load(self, program):
         # Agregar mecanismo que detenga los otros threads?
         process        = PCB(program, self.global_id)
         self.global_id = self.global_id + 1
+        self._load_in_memory(process)
+
+    def _load_in_memory(self, process):
         if self.memory.can_load(process):
-            process.state  = "Ready"
+            process.state = "Ready"
             self.ready_list.append(process)
             self.memory.load(process)
             self.scheduler.add_element(process)
         else:
             print process.program.name + ' no entra en la memoria'
+            sleep(10)
+            self._load_in_memory(process)
 
     def run_next_process(self):
         process = self.scheduler.choose_next()
@@ -74,19 +81,21 @@ class Kernel():
         self.irq.cpu_ready_signal(self, pcb)
         
 def main():
-    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MVT(16, FirstFit()))
-    program1 = Program('Wine', [InstructionCPU('CPU1'), InstructionIO('IO1'), InstructionCPU('CPU2')])
-    program2 = Program('Eclipse', [InstructionIO('IO1'), InstructionCPU('CPU1'), InstructionCPU('CPU2')])
-    program3 = Program('Thor', [InstructionCPU('CPU1'), InstructionCPU('CPU2'), InstructionIO('IO1')])
-    program4 = Program('Firefox', [InstructionCPU('CPU1'), InstructionCPU('CPU2'), InstructionCPU('CPU3'), InstructionCPU('CPU4'), InstructionIO('IO1')])
-    program5 = Program('Chrome', [InstructionCPU('CPU1'), InstructionCPU('CPU2'), InstructionCPU('CPU3'), InstructionCPU('CPU4'), InstructionCPU('CPU5'), InstructionIO('IO1')])
-    program6 = Program('Rythmbox', [InstructionIO('IO1'), InstructionIO('IO2'), InstructionCPU('CPU1'), InstructionCPU('CPU2'), InstructionCPU('CPU3'), InstructionIO('IO3')])
-    kernel.load(program1)
-    kernel.load(program2)
-    kernel.load(program3)
-    kernel.load(program4)
-    kernel.load(program5)
-    kernel.load(program6)
+    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MVT(32, FirstFit()))
+    shell  = Shell(kernel)
+    shell.start()
+#     program1 = Program('Wine', [InstructionCPU('CPU1'), InstructionIO('IO1'), InstructionCPU('CPU2')])
+#     program2 = Program('Eclipse', [InstructionIO('IO1'), InstructionCPU('CPU1'), InstructionCPU('CPU2')])
+#     program3 = Program('Thor', [InstructionCPU('CPU1'), InstructionCPU('CPU2'), InstructionIO('IO1')])
+#     program4 = Program('Firefox', [InstructionCPU('CPU1'), InstructionCPU('CPU2'), InstructionCPU('CPU3'), InstructionCPU('CPU4'), InstructionIO('IO1')])
+#     program5 = Program('Chrome', [InstructionCPU('CPU1'), InstructionCPU('CPU2'), InstructionCPU('CPU3'), InstructionCPU('CPU4'), InstructionCPU('CPU5'), InstructionIO('IO1')])
+#     program6 = Program('Rythmbox', [InstructionIO('IO1'), InstructionIO('IO2'), InstructionCPU('CPU1'), InstructionCPU('CPU2'), InstructionCPU('CPU3'), InstructionIO('IO3')])
+#     kernel.load(program1)
+#     kernel.load(program2)
+#     kernel.load(program3)
+#     kernel.load(program4)
+#     kernel.load(program5)
+#     kernel.load(program6)
     
     while True:
         kernel.kernel_waiting_cpu.acquire()
