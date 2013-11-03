@@ -41,7 +41,6 @@ class MVT(Algorithm):
         del self.full[pcb]
         self.free(block)
         self.unload_physical(pcb, physical_memory)
-        pcb.base_direction = None        
 
     def fetch(self, pcb, physical_memory):
         block  = self.full[pcb]
@@ -53,7 +52,7 @@ class MVT(Algorithm):
         return block.shift + 1 == pcb.size_in_memory()
     
     def do_shift(self, physical_memory):
-        print 'Memoria haciendo corrimiento de bloques'
+        print 'Memoria haciendo corrimiento de bloques...'
         first = self.first_empty_block()
         # Se repite hasta quedar un solo bloque vacio al final de la memoria
         while first.next is not None:
@@ -81,7 +80,7 @@ class MVT(Algorithm):
             f_next.previous = empty_block
         if e_previous is not None:
             e_previous.next = full_block
-        self.swap_physical(f_ex_start, full_block, physical_memory, self.find_pcb(full_block))
+        self.swap_physical(f_ex_start, full_block, physical_memory, self._find_pcb(full_block))
             
     def fuse(self, empty, empty_next):
         self.empty.remove(empty_next)
@@ -95,7 +94,7 @@ class MVT(Algorithm):
             physical_memory[pcb.base_direction + direction] = physical_memory[ex_start + direction]
             del physical_memory[ex_start + direction]
             
-    def find_pcb(self, full_block):
+    def _find_pcb(self, full_block):
         for pcb, block in self.full.iteritems():
             if block == full_block:
                 return pcb
@@ -146,6 +145,7 @@ class MVT(Algorithm):
     def unload_physical(self, pcb, physical_memory):
         for direction in range(pcb.size_in_memory()):
             del physical_memory[pcb.base_direction + direction]
+        pcb.base_direction = None
             
     def free(self, block):
         if block.next is None or not block.next.is_empty:

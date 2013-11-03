@@ -25,13 +25,14 @@ from shell import Shell
 class Kernel():
     
     def __init__(self, scheduler_algorithm, memory_algorithm):
-        self.ready_list         = []
+        self.incoming_list      = [] # Procesos esperando para cargarse en memoria
+        self.ready_list         = [] # Procesos listos para competir por la CPU
         self.scheduler          = Scheduler(scheduler_algorithm)
-        self.kernel_waiting_cpu = Semaphore()
+        self.kernel_waiting_cpu = Semaphore() # Sincroniza el kernel con la CPU cuando corre una instruccion
         self.memory             = MMU(memory_algorithm)
         self.cpu                = CPU(self, self.memory)
         self.io_handler         = IOHandler(self)
-        self.irq                = IRQ()
+        self.irq                = IRQ() # Se encarga de manejar las interrupciones
         self.global_id          = 0
         
         self.cpu.start()
@@ -47,9 +48,14 @@ class Kernel():
         if self.memory.can_load(process):
             self.irq.new_signal(self, process)
         else:
-            print process.program.name + ' no entra en la memoria'
-            sleep(3)
-            self._load_in_memory(process)
+            print process.program.name + ' esperando espacio en memoria'
+            self.incoming_list.append(process)
+            
+    def look_for_next_to_load(self):
+        for pcb in self.incoming_list:
+            if self.memory.can_load(pcb):
+                return pcb
+        return None
 
     def run_next_process(self):
         process = self.scheduler.choose_next()
@@ -77,7 +83,7 @@ class Kernel():
         self.irq.cpu_ready_signal(self, pcb)
         
 def main():
-    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MVT(16, FirstFit()))
+    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MVT(32, FirstFit()))
     shell  = Shell(kernel)
     shell.start()
 #     program1 = Program('Wine', [InstructionCPU('CPU1'), InstructionIO('IO1'), InstructionCPU('CPU2')])
