@@ -39,20 +39,16 @@ class Kernel():
     
     
     def load(self, program):
-        # Agregar mecanismo que detenga los otros threads?
         process        = PCB(program, self.global_id)
         self.global_id = self.global_id + 1
         self._load_in_memory(process)
 
     def _load_in_memory(self, process):
         if self.memory.can_load(process):
-            process.state = "Ready"
-            self.ready_list.append(process)
-            self.memory.load(process)
-            self.scheduler.add_element(process)
+            self.irq.new_signal(self, process)
         else:
             print process.program.name + ' no entra en la memoria'
-            sleep(10)
+            sleep(3)
             self._load_in_memory(process)
 
     def run_next_process(self):
@@ -81,7 +77,7 @@ class Kernel():
         self.irq.cpu_ready_signal(self, pcb)
         
 def main():
-    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MVT(32, FirstFit()))
+    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MVT(16, FirstFit()))
     shell  = Shell(kernel)
     shell.start()
 #     program1 = Program('Wine', [InstructionCPU('CPU1'), InstructionIO('IO1'), InstructionCPU('CPU2')])

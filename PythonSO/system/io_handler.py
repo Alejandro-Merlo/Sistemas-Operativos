@@ -25,10 +25,9 @@ class IOHandler(Thread):
                 next_pair[0].state = 'Running I/O'
                 print next_pair[0].program.name + ' de prioridad ' + str(next_pair[0].priority) + ' ejecutando I/O'
                 next_pair[1][1].execute()
-                sleep(1)
+                sleep(2)
                 if next_pair[1][0]:
-                    print next_pair[0].program.name + ' ha terminado su ejecucion'
                     self.kernel.io_kill_signal(next_pair[0])
                 else:
                     self.kernel.io_ready_signal(next_pair[0])
-            sleep(1)
+            sleep(2)

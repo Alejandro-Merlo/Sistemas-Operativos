@@ -45,7 +45,7 @@ class MVT(Algorithm):
 
     def fetch(self, pcb, physical_memory):
         block  = self.full[pcb]
-        result = (self._is_the_last_instruction(pcb, block) , physical_memory[pcb.compute_pc(block.shift)])
+        result = (self._is_the_last_instruction(pcb, block), physical_memory[pcb.compute_pc(block.shift)])
         block.shift += 1
         return result
 
@@ -72,10 +72,15 @@ class MVT(Algorithm):
         empty_block.start    = full_block.end + 1
         # Actualizo su anterior y su siguiente
         f_next               = full_block.next
+        e_previous           = empty_block.previous
         full_block.next      = empty_block
-        full_block.previous  = empty_block.previous
+        full_block.previous  = e_previous
         empty_block.previous = full_block
         empty_block.next     = f_next
+        if f_next is not None:
+            f_next.previous = empty_block
+        if e_previous is not None:
+            e_previous.next = full_block
         self.swap_physical(f_ex_start, full_block, physical_memory, self.find_pcb(full_block))
             
     def fuse(self, empty, empty_next):
@@ -88,6 +93,7 @@ class MVT(Algorithm):
         pcb.base_direction = full_block.start
         for direction in range(0, pcb.size_in_memory()):
             physical_memory[pcb.base_direction + direction] = physical_memory[ex_start + direction]
+            del physical_memory[ex_start + direction]
             
     def find_pcb(self, full_block):
         for pcb, block in self.full.iteritems():
@@ -129,7 +135,7 @@ class MVT(Algorithm):
             new_full_block = Block(block.start, block.start + new_block_size, block.previous, block, False)
             if block.previous is not None:
                 block.previous.next = new_full_block
-            block.start += new_block_size + 1
+            block.start    = new_full_block.end + 1
             block.previous = new_full_block
             self.full[pcb] = new_full_block
         else:
@@ -138,7 +144,7 @@ class MVT(Algorithm):
             self.empty.remove(block)
             
     def unload_physical(self, pcb, physical_memory):
-        for direction in range(0, pcb.size_in_memory()):
+        for direction in range(pcb.size_in_memory()):
             del physical_memory[pcb.base_direction + direction]
             
     def free(self, block):
@@ -154,13 +160,19 @@ class MVT(Algorithm):
                 # del anterior lo fusiono con este ultimo
                 block.previous.end  = block.end
                 block.previous.next = block.next
+                if block.next is not None:
+                    block.next.previous = block.previous
         elif block.previous is None or not block.previous.is_empty:
             # En caso de que el anterior no exista o que este lleno, no importa el caso
             # del siguiente lo fusiono con este ultimo
             block.next.start    = block.start
             block.next.previous = block.previous
+            if block.previous is not None:
+                block.previous.next = block.next
         else:
             # Finalmente, ambos estan vacios por lo que fusiono los tres bloques
             block.previous.end  = block.next.end
             block.previous.next = block.next.next
+            if block.next.next is not None:
+                block.next.next.previous = block.previous
             self.empty.remove(block.next)

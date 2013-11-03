@@ -17,18 +17,18 @@ class Shell(Thread):
         self.kernel = kernel
         
     def run(self):
-        #number = 1
-        #while True:
-        for e in range(1, 20):
+        number = 1
+        while True:
+        #for e in range(1, 20):
             instructions = []
             
-            for i in range(1, random.randint(3, 6)):
+            for i in range(1, random.randint(2, 8)):
                 instructions.append(InstructionCPU('CPU' + str(i)))
                 
             for i in range(1, random.randint(2, 3)):
                 instructions.append(InstructionIO('IO' + str(i)))
                 
-            new_program = Program("Program" + str(e), instructions)
+            new_program = Program("Program" + str(number), instructions)
             self.kernel.load(new_program)
-            #number = number + 1
+            number += 1
             sleep(random.randint(5, 10))

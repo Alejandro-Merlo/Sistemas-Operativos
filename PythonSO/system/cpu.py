@@ -21,7 +21,7 @@ class CPU(Thread):
         while True:
             if self.assigned_pcb is not None:
                 self.process_pcb()
-            sleep(1)
+            sleep(2)
 
     def process_pcb(self):
         next_instruction = self.memory.fetch(self.assigned_pcb)
@@ -31,7 +31,6 @@ class CPU(Thread):
                 self.execute_instruction(next_instruction)
             # Chequeo para Round Robin
             elif self.assigned_pcb.quantum == 0:
-                print self.assigned_pcb.program.name + ' ha terminado su quantum, cede la CPU'
                 self.kernel.cpu_ready_signal(self.assigned_pcb)
                 self.assigned_pcb = None
             else:
@@ -45,6 +44,5 @@ class CPU(Thread):
         print self.assigned_pcb.program.name + ' de prioridad ' + str(self.assigned_pcb.priority) + ' ejecutando en CPU'
         next_instruction[1].execute()
         if next_instruction[0]:
-            print self.assigned_pcb.program.name + ' ha terminado su ejecucion'
             self.kernel.cpu_kill_signal(self.assigned_pcb)
             self.assigned_pcb = None
