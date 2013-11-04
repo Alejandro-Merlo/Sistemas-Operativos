@@ -11,8 +11,8 @@ class MVT(Algorithm):
     def __init__(self, memory_size, selection_method):
         # Los bloques adyacentes a un bloque vacio siempre estan llenos
         # Los bloques adyacentes a un bloque lleno pueden estar vacios o llenos 
-        self.memory_size      = memory_size
-        self.selection_method = selection_method
+        Algorithm.__init__(self, memory_size)
+        self.selection_method = selection_method # Seleccion de bloque vacio (Primer ajuste, mejor ajuste o peor ajuste)
         self.full             = {} # Mapeo de bloques llenos: PCB -> Bloque
         self.empty            = [Block(0, memory_size - 1)] # Lista de bloques vacios
         
@@ -28,7 +28,7 @@ class MVT(Algorithm):
         if result is not None:
             self._load_result(pcb, physical_memory, result)
         else:
-            self.do_shift(physical_memory)
+            self.compact(physical_memory)
             self._load_result(pcb, physical_memory, self.empty[0])
 
     def _load_result(self, pcb, physical_memory, result):
@@ -51,7 +51,7 @@ class MVT(Algorithm):
     def _is_the_last_instruction(self, pcb, block):
         return block.shift + 1 == pcb.size_in_memory()
     
-    def do_shift(self, physical_memory):
+    def compact(self, physical_memory):
         print 'Memoria haciendo corrimiento de bloques...'
         first = self.first_empty_block()
         # Se repite hasta quedar un solo bloque vacio al final de la memoria

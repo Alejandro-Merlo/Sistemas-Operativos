@@ -8,6 +8,9 @@ from abc import ABCMeta, abstractmethod
 class Algorithm():
     __metaclass__ = ABCMeta
     
+    def __init__(self, memory_size):
+        self.memory_size = memory_size
+    
     @abstractmethod
     def can_load(self, pcb):
         pass

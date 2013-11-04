@@ -25,7 +25,7 @@ from shell import Shell
 class Kernel():
     
     def __init__(self, scheduler_algorithm, memory_algorithm):
-        self.incoming_list      = [] # Procesos esperando para cargarse en memoria
+        self.incoming_list      = [] # Procesos esperando para cargarse en memoria - deberia ir aca o en el algoritmo de mvt?
         self.ready_list         = [] # Procesos listos para competir por la CPU
         self.scheduler          = Scheduler(scheduler_algorithm)
         self.kernel_waiting_cpu = Semaphore() # Sincroniza el kernel con la CPU cuando corre una instruccion
