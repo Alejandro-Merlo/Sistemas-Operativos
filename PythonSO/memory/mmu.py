@@ -13,13 +13,13 @@ class MMU():
         return self.logical_memory.can_load(pcb)
         
     def load(self, pcb):
-        print pcb.program.name + ' alocandose en memoria'
+        print 'Proceso' + str(pcb.pid) + ' alocandose en memoria'
         self.logical_memory.load(pcb, self.physical_memory)
         
     def unload(self, pcb):
-        print pcb.program.name + ' desalocandose de la memoria'
+        print 'Proceso' + str(pcb.pid) + ' desalocandose de la memoria'
         self.logical_memory.unload(pcb, self.physical_memory)
         
     def fetch(self, pcb):
-        print 'Memoria buscando siguiente instruccion de ' + pcb.program.name
+        print 'Memoria buscando siguiente instruccion del proceso' + str(pcb.pid)
         return self.logical_memory.fetch(pcb, self.physical_memory)

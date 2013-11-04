@@ -48,7 +48,7 @@ class Kernel():
         if self.memory.can_load(process):
             self.irq.new_signal(self, process)
         else:
-            print process.program.name + ' esperando espacio en memoria'
+            print 'Proceso' + str(process.pid) + ' esperando espacio en memoria'
             self.incoming_list.append(process)
             
     def look_for_next_to_load(self):

@@ -41,7 +41,7 @@ class CPU(Thread):
             self.assigned_pcb = None
 
     def execute_instruction(self, next_instruction):
-        print self.assigned_pcb.program.name + ' de prioridad ' + str(self.assigned_pcb.priority) + ' ejecutando en CPU'
+        print 'Proceso' + str(self.assigned_pcb.pid) + ' de prioridad ' + str(self.assigned_pcb.priority) + ' ejecutando en CPU'
         next_instruction[1].execute()
         if next_instruction[0]:
             self.kernel.cpu_kill_signal(self.assigned_pcb)

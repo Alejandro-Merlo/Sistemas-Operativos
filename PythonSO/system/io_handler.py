@@ -15,7 +15,7 @@ class IOHandler(Thread):
         
     def add(self, pcb, instruction):
         pcb.state = 'Ready I/O'
-        print pcb.program.name + ' esperando I/O'
+        print 'Proceso' + str(pcb.pid) + ' esperando I/O'
         self.ready_io.append((pcb, instruction))
         
     def run(self):
@@ -23,7 +23,7 @@ class IOHandler(Thread):
             if self.ready_io != []:
                 next_pair          = self.ready_io.pop(0)
                 next_pair[0].state = 'Running I/O'
-                print next_pair[0].program.name + ' de prioridad ' + str(next_pair[0].priority) + ' ejecutando I/O'
+                print 'Proceso' + str(next_pair[0].pid) + ' de prioridad ' + str(next_pair[0].priority) + ' ejecutando I/O'
                 next_pair[1][1].execute()
                 sleep(2)
                 if next_pair[1][0]:

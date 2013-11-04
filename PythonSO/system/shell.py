@@ -19,7 +19,7 @@ class Shell(Thread):
     def run(self):
         #number = 1
         #while True:
-        for e in range(1, 20):
+        for e in range(20):
             instructions = []
             
             for i in range(1, random.randint(2, 8)):

@@ -48,7 +48,7 @@ class IRQ():
         self.kernel_mode.release()
 
     def _kill(self, kernel, pcb):
-        print pcb.program.name + ' ha terminado su ejecucion'
+        print 'Proceso' + str(pcb.pid) + ' ha terminado su ejecucion'
         kernel.memory.unload(pcb)
         pcb.state = 'Terminated'
 
@@ -61,7 +61,7 @@ class IRQ():
         
     def cpu_ready_signal(self, kernel, pcb):
         self.kernel_mode.acquire()
-        print pcb.program.name + ' ha terminado su quantum, cede la CPU'
+        print 'Proceso' + str(pcb.pid) + ' ha terminado su quantum, cede la CPU'
         kernel.ready_list.append(pcb)
         kernel.scheduler.add_element(pcb)
         self.kernel_mode.release()
