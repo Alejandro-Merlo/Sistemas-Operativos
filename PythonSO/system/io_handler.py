@@ -27,7 +27,7 @@ class IOHandler(Thread):
                 next_pair[1][1].execute()
                 sleep(2)
                 if next_pair[1][0]:
-                    self.kernel.io_kill_signal(next_pair[0])
+                    self.kernel.kill_signal(next_pair[0])
                 else:
-                    self.kernel.io_ready_signal(next_pair[0])
+                    self.kernel.suspend_signal(next_pair[0])
             sleep(2)

@@ -12,12 +12,10 @@ class MMU():
         self.init_memory(memory_size)
         self.do_dump_state()
         
+        
     def init_memory(self, memory_size):
         for direction in range(memory_size):
             self.physical_memory[direction] = None
-        
-    def can_load(self, pcb):
-        return self.logical_memory.can_load(pcb)
     
     def do_dump_state(self):
         print 'Estado de memoria'
@@ -28,6 +26,9 @@ class MMU():
                 print str(cell) + ' -> ' + instruction.value
             else:
                 print str(cell) + ' -> Vacio'
+        
+    def can_load(self, pcb):
+        return self.logical_memory.can_load(pcb)
         
     def load(self, pcb):
         print 'Proceso' + str(pcb.pid) + ' alocandose en memoria'

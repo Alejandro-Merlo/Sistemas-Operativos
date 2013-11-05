@@ -13,9 +13,6 @@ class CPU(Thread):
         self.assigned_pcb = None
         self.kernel       = kernel
         self.memory       = memory
-        
-    def set_pcb(self, pcb):
-        self.assigned_pcb = pcb
             
     def run(self):
         while True:
@@ -31,7 +28,7 @@ class CPU(Thread):
                 self.execute_instruction(next_instruction)
             # Chequeo para Round Robin
             elif self.assigned_pcb.quantum == 0:
-                self.kernel.cpu_ready_signal(self.assigned_pcb)
+                self.kernel.suspend_signal(self.assigned_pcb)
                 self.assigned_pcb = None
             else:
                 self.assigned_pcb.quantum -= 1
@@ -44,5 +41,5 @@ class CPU(Thread):
         print 'Proceso' + str(self.assigned_pcb.pid) + ' de prioridad ' + str(self.assigned_pcb.priority) + ' ejecutando en CPU'
         next_instruction[1].execute()
         if next_instruction[0]:
-            self.kernel.cpu_kill_signal(self.assigned_pcb)
+            self.kernel.kill_signal(self.assigned_pcb)
             self.assigned_pcb = None

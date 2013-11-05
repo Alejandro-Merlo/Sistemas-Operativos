@@ -10,12 +10,26 @@ class MVT(Algorithm):
     
     def __init__(self, memory_size, selection_method):
         # Los bloques adyacentes a un bloque vacio siempre estan llenos
-        # Los bloques adyacentes a un bloque lleno pueden estar vacios o llenos 
+        # Los bloques adyacentes a un bloque lleno pueden estar vacios o llenos
+        
         Algorithm.__init__(self, memory_size)
         self.selection_method = selection_method # Seleccion de bloque vacio (Primer ajuste, mejor ajuste o peor ajuste)
         self.full             = {} # Mapeo de bloques llenos: PCB -> Bloque
         self.empty            = [Block(0, memory_size - 1)] # Lista de bloques vacios
         
+        
+    def do_dump_state(self, physical_memory):
+        print 'Bloques vacios:'
+        for empty in self.empty:
+            print '[' + str(empty.start) + ',' + str(empty.end) + ']'
+        print 'Bloques llenos:'
+        for pcb, full in self.full.iteritems():
+            print 'Proceso' + str(pcb.pid) + '-> [' + str(full.start) + ',' + str(full.end) + ']'      
+
+
+    ###################
+    # CARGA
+    ###################
     def can_load(self, pcb):
         free_space = self.free_space()
         for block in self.empty:
@@ -30,35 +44,28 @@ class MVT(Algorithm):
         else:
             self.compact(physical_memory)
             self._load_result(pcb, physical_memory, self.empty[0])
+    
+    def free_space(self):
+        space = 0
+        for block in self.empty:
+            space += block.size()
+        return space
 
     def _load_result(self, pcb, physical_memory, result):
         pcb.base_direction = result.start
         self.load_physical(pcb, physical_memory)
         self.divide(pcb, result)
-        
-    def do_dump_state(self, physical_memory):
-        print 'Bloques vacios:'
-        for empty in self.empty:
-            print '[' + str(empty.start) + ',' + str(empty.end) + ']'
-        print 'Bloques llenos:'
-        for pcb, full in self.full.iteritems():
-            print 'Proceso' + str(pcb.pid) + '-> [' + str(full.start) + ',' + str(full.end) + ']'      
-        
-    def unload(self, pcb, physical_memory):
-        block = self.full[pcb]
-        del self.full[pcb]
-        self.free(block)
-        self.unload_physical(pcb, physical_memory)
-
-    def fetch(self, pcb, physical_memory):
-        block  = self.full[pcb]
-        result = (self._is_the_last_instruction(pcb, block), physical_memory[pcb.compute_pc(block.shift)])
-        block.shift += 1
-        return result
-
-    def _is_the_last_instruction(self, pcb, block):
-        return block.shift + 1 == pcb.size_in_memory()
+                
+    def load_physical(self, pcb, physical_memory):
+        direction = pcb.base_direction
+        for instruction in pcb.program.instructions:
+            physical_memory[direction] = instruction
+            direction += 1
     
+    
+    #########################
+    # COMPACTACION
+    #########################
     def compact(self, physical_memory):
         print 'Memoria haciendo corrimiento de bloques...'
         first = self.first_empty_block()
@@ -120,18 +127,6 @@ class MVT(Algorithm):
                 return False
             previous = previous.previous
         return True
-    
-    def free_space(self):
-        space = 0
-        for block in self.empty:
-            space += block.size()
-        return space
-                
-    def load_physical(self, pcb, physical_memory):
-        direction = pcb.base_direction
-        for instruction in pcb.program.instructions:
-            physical_memory[direction] = instruction
-            direction += 1
 
     def divide(self, pcb, block):
         # Contemplo el caso en que el nuevo bloque lleno no alcanza a
@@ -149,6 +144,16 @@ class MVT(Algorithm):
             self.full[pcb] = block
             block.is_empty = False
             self.empty.remove(block)
+            
+            
+    #########################
+    # DESCARGA
+    #########################        
+    def unload(self, pcb, physical_memory):
+        block = self.full[pcb]
+        del self.full[pcb]
+        self.free(block)
+        self.unload_physical(pcb, physical_memory)
             
     def unload_physical(self, pcb, physical_memory):
         for direction in range(pcb.size_in_memory()):
@@ -184,3 +189,16 @@ class MVT(Algorithm):
             if block.next.next is not None:
                 block.next.next.previous = block.previous
             self.empty.remove(block.next)
+
+
+    ##########################
+    # BUSQUEDA
+    ##########################
+    def fetch(self, pcb, physical_memory):
+        block  = self.full[pcb]
+        result = (self._is_the_last_instruction(pcb, block), physical_memory[pcb.compute_pc(block.shift)])
+        block.shift += 1
+        return result
+
+    def _is_the_last_instruction(self, pcb, block):
+        return block.shift + 1 == pcb.size_in_memory()
