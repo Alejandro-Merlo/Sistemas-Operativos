@@ -16,6 +16,10 @@ class Algorithm():
         pass
     
     @abstractmethod
+    def do_dump_state(self, physical_memory):
+        pass
+    
+    @abstractmethod
     def load(self, pcb, physical_memory):
         pass
     

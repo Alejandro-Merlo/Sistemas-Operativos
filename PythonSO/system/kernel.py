@@ -24,12 +24,12 @@ from shell import Shell
 
 class Kernel():
     
-    def __init__(self, scheduler_algorithm, memory_algorithm):
-        self.incoming_list      = [] # Procesos esperando para cargarse en memoria - deberia ir aca o en el algoritmo de mvt?
+    def __init__(self, scheduler_algorithm, memory):
+        self.incoming_list      = [] # Procesos esperando para cargarse en memoria - va en el planificador de largo plazo
         self.ready_list         = [] # Procesos listos para competir por la CPU
         self.scheduler          = Scheduler(scheduler_algorithm)
         self.kernel_waiting_cpu = Semaphore() # Sincroniza el kernel con la CPU cuando corre una instruccion
-        self.memory             = MMU(memory_algorithm)
+        self.memory             = memory
         self.cpu                = CPU(self, self.memory)
         self.io_handler         = IOHandler(self)
         self.irq                = IRQ() # Se encarga de manejar las interrupciones
@@ -60,7 +60,6 @@ class Kernel():
     def run_next_process(self):
         process = self.scheduler.choose_next()
         while process is None:
-            print 'Kernel esperando procesos...'
             sleep(5)
             process = self.scheduler.choose_next()
         
@@ -83,7 +82,7 @@ class Kernel():
         self.irq.cpu_ready_signal(self, pcb)
         
 def main():
-    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MVT(32, FirstFit()))
+    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MMU(MVT(32, FirstFit()), 32))
     shell  = Shell(kernel)
     shell.start()
 #     program1 = Program('Wine', [InstructionCPU('CPU1'), InstructionIO('IO1'), InstructionCPU('CPU2')])

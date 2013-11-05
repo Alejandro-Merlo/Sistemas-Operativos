@@ -36,6 +36,14 @@ class MVT(Algorithm):
         self.load_physical(pcb, physical_memory)
         self.divide(pcb, result)
         
+    def do_dump_state(self, physical_memory):
+        print 'Bloques vacios:'
+        for empty in self.empty:
+            print '[' + str(empty.start) + ',' + str(empty.end) + ']'
+        print 'Bloques llenos:'
+        for pcb, full in self.full.iteritems():
+            print 'Proceso' + str(pcb.pid) + '-> [' + str(full.start) + ',' + str(full.end) + ']'      
+        
     def unload(self, pcb, physical_memory):
         block = self.full[pcb]
         del self.full[pcb]
@@ -92,7 +100,7 @@ class MVT(Algorithm):
         pcb.base_direction = full_block.start
         for direction in range(0, pcb.size_in_memory()):
             physical_memory[pcb.base_direction + direction] = physical_memory[ex_start + direction]
-            del physical_memory[ex_start + direction]
+            physical_memory[ex_start + direction]           = None
             
     def _find_pcb(self, full_block):
         for pcb, block in self.full.iteritems():
@@ -129,9 +137,9 @@ class MVT(Algorithm):
         # Contemplo el caso en que el nuevo bloque lleno no alcanza a
         # cubrir todo el bloque vacio y el caso en que si alcanza a cubrirlo.
         # En ambos casos reutilizo la informacion del bloque vacio.
-        new_block_size = pcb.size_in_memory() - 1
+        new_block_size = pcb.size_in_memory()
         if new_block_size < block.size():
-            new_full_block = Block(block.start, block.start + new_block_size, block.previous, block, False)
+            new_full_block = Block(block.start, block.start + new_block_size - 1, block.previous, block, False)
             if block.previous is not None:
                 block.previous.next = new_full_block
             block.start    = new_full_block.end + 1
@@ -144,7 +152,7 @@ class MVT(Algorithm):
             
     def unload_physical(self, pcb, physical_memory):
         for direction in range(pcb.size_in_memory()):
-            del physical_memory[pcb.base_direction + direction]
+            physical_memory[pcb.base_direction + direction] = None
         pcb.base_direction = None
             
     def free(self, block):

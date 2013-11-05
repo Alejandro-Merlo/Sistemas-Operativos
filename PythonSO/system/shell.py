@@ -23,10 +23,10 @@ class Shell(Thread):
             instructions = []
             
             for i in range(1, random.randint(2, 8)):
-                instructions.append(InstructionCPU('CPU' + str(i)))
+                instructions.append(InstructionCPU('Proceso' + str(e) + ' -> Instruccion CPU' + str(i)))
                 
             for i in range(1, random.randint(2, 3)):
-                instructions.append(InstructionIO('IO' + str(i)))
+                instructions.append(InstructionIO('Proceso' + str(e) + ' -> Instruccion IO' + str(i)))
                 
             new_program = Program("Program" + str(e), instructions)
             self.kernel.load(new_program)

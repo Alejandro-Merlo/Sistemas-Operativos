@@ -10,8 +10,5 @@ class InstructionCPU(Instruction):
     def __init__(self, value):
         Instruction.__init__(self, value)
         
-    def execute(self):
-        print 'Instruccion CPU: ' + self.value
-        
     def is_cpu(self):
         return True

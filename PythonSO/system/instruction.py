@@ -11,9 +11,8 @@ class Instruction:
     def __init__(self, value):
         self.value = value
         
-    @abstractmethod
     def execute(self):
-        pass
+        print self.value
     
     @abstractmethod
     def is_cpu(self):
