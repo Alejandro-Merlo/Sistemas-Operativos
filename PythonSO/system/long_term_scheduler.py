@@ -19,14 +19,13 @@ class LongTermScheduler():
 
     def _check_loading(self, process, kernel):
         if self.memory.can_load(process):
-            kernel.irq.new_signal(kernel, process)
+            kernel.new_signal(process)
         else:
             print 'Proceso' + str(process.pid) + ' esperando espacio en memoria'
             self.incoming_list.append(process)
             
     def load_process(self, kernel, process):
         process.state = "Ready"
-        kernel.ready_list.append(process)
         self.memory.load(process)
         kernel.scheduler.add_element(process)
 

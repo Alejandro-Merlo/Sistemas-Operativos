@@ -33,7 +33,7 @@ class MVT(Algorithm):
     def can_load(self, pcb):
         free_space = self.free_space()
         for block in self.empty:
-            if pcb.size_in_memory() <= block.size() or pcb.size_in_memory() <= free_space:
+            if pcb.limit() <= block.size() or pcb.limit() <= free_space:
                 return True
         return False
 
@@ -105,7 +105,7 @@ class MVT(Algorithm):
     def swap_physical(self, ex_start, full_block, physical_memory, pcb):
         # Reacomodo cada instruccion en su nueva entrada correspondiente
         pcb.base_direction = full_block.start
-        for direction in range(0, pcb.size_in_memory()):
+        for direction in range(0, pcb.limit()):
             physical_memory[pcb.base_direction + direction] = physical_memory[ex_start + direction]
             physical_memory[ex_start + direction]           = None
             
@@ -132,7 +132,7 @@ class MVT(Algorithm):
         # Contemplo el caso en que el nuevo bloque lleno no alcanza a
         # cubrir todo el bloque vacio y el caso en que si alcanza a cubrirlo.
         # En ambos casos reutilizo la informacion del bloque vacio.
-        new_block_size = pcb.size_in_memory()
+        new_block_size = pcb.limit()
         if new_block_size < block.size():
             new_full_block = Block(block.start, block.start + new_block_size - 1, block.previous, block, False)
             if block.previous is not None:
@@ -156,7 +156,7 @@ class MVT(Algorithm):
         self.unload_physical(pcb, physical_memory)
             
     def unload_physical(self, pcb, physical_memory):
-        for direction in range(pcb.size_in_memory()):
+        for direction in range(pcb.limit()):
             physical_memory[pcb.base_direction + direction] = None
         pcb.base_direction = None
             
@@ -194,11 +194,13 @@ class MVT(Algorithm):
     ##########################
     # BUSQUEDA
     ##########################
-    def fetch(self, pcb, physical_memory):
-        block  = self.full[pcb]
-        result = (self._is_the_last_instruction(pcb, block), physical_memory[pcb.compute_pc(block.shift)])
+    def fetch(self, logical_direction, physical_memory):
+        block  = self.search_block_by_start(logical_direction)
+        result = physical_memory[logical_direction + block.shift]
         block.shift += 1
         return result
-
-    def _is_the_last_instruction(self, pcb, block):
-        return block.shift + 1 == pcb.size_in_memory()
+    
+    def search_block_by_start(self, start):
+        for block in self.full.itervalues():
+            if block.start == start:
+                return block

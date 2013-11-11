@@ -14,9 +14,9 @@ class PrioritaryRoundRobin(Algorithm):
     
     def add(self, process):
         process.set_quantum(self.quantum)
-        self.structure.add(process)
+        self.ready_list.add(process)
                 
     def get(self):
-        pcb = self.structure.pop_next_to_execute()
-        self.structure.age_all()
+        pcb = self.ready_list.pop_next_to_execute()
+        self.ready_list.age_all()
         return pcb

@@ -29,6 +29,5 @@ class IRQ():
     def suspend_signal(self, kernel, pcb):
         self.kernel_mode.acquire()
         print 'Proceso' + str(pcb.pid) + ' vuelve a la cola de listos'
-        kernel.ready_list.append(pcb)
         kernel.scheduler.add_element(pcb)
         self.kernel_mode.release()

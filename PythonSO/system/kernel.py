@@ -21,7 +21,6 @@ from memory.first_fit import FirstFit
 class Kernel():
     
     def __init__(self, scheduler_algorithm, memory):
-        self.ready_list          = [] # Procesos listos para competir por la CPU
         self.scheduler           = Scheduler(scheduler_algorithm)
         self.long_term_scheduler = LongTermScheduler(memory)
         self.cpu                 = CPU(self, memory)
@@ -41,13 +40,15 @@ class Kernel():
             sleep(5)
             process = self.scheduler.choose_next()
         
-        self.ready_list.remove(process)
         self.cpu.assigned_pcb = process        
         
     
     ###################
     # INTERRUPCIONES
     ###################
+    def new_signal(self, process):
+        self.irq.new_signal(self, process)
+
     def io_signal(self, pcb, io_instruction):
         self.irq.io_signal(self, pcb, io_instruction)
     
@@ -60,7 +61,12 @@ class Kernel():
         
         
 def main():
-    kernel = Kernel(PrioritaryRoundRobin(3, 5, 3), MMU(MVT(32, FirstFit()), 32))
+    memory_size = 32
+    quantum     = 3
+    priorities  = 5
+    agings      = 3
+    
+    kernel = Kernel(PrioritaryRoundRobin(quantum, priorities, agings), MMU(MVT(memory_size, FirstFit()), memory_size))
     shell  = Shell(kernel)
     shell.start()
     

@@ -9,7 +9,7 @@ class Algorithm():
     __metaclass__ = ABCMeta
     
     def __init__(self, structure):
-        self.structure = structure
+        self.ready_list = structure # Procesos listos para competir por la CPU
         
     @abstractmethod    
     def add(self, process):

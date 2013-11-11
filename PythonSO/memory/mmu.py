@@ -40,6 +40,6 @@ class MMU():
         self.logical_memory.unload(pcb, self.physical_memory)
         self.do_dump_state()
         
-    def fetch(self, pcb):
-        print 'Memoria buscando siguiente instruccion del proceso' + str(pcb.pid)
-        return self.logical_memory.fetch(pcb, self.physical_memory)
+    def fetch(self, logical_direction):
+        print 'Memoria buscando en direccion logica ' + str(logical_direction)
+        return self.logical_memory.fetch(logical_direction, self.physical_memory)

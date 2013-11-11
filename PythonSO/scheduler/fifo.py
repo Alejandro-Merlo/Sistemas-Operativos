@@ -12,9 +12,9 @@ class FIFO(Algorithm):
         
     def add(self, process):
         process.set_priority(0)
-        self.structure.append(process)
+        self.ready_list.append(process)
         
     def get(self):
-        if self.structure == []:
+        if self.ready_list == []:
             return None
-        return self.structure.pop(0)
+        return self.ready_list.pop(0)

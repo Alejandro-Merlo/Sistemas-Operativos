@@ -21,8 +21,8 @@ class CPU(Thread):
             sleep(2)
 
     def process_pcb(self):
-        next_instruction = self.memory.fetch(self.assigned_pcb)
-        if next_instruction[1].is_cpu():
+        next_instruction = self.memory.fetch(self.assigned_pcb.base_direction)
+        if next_instruction.is_cpu():
             # Chequeo para FIFO
             if self.assigned_pcb.quantum is None:
                 self.execute_instruction(next_instruction)
@@ -34,12 +34,16 @@ class CPU(Thread):
                 self.assigned_pcb.quantum -= 1
                 self.execute_instruction(next_instruction)
         else:
-            self.kernel.io_signal(self.assigned_pcb, next_instruction)
+            
+            self.kernel.io_signal(self.assigned_pcb, (self._is_the_last(next_instruction), next_instruction))
             self.assigned_pcb = None
 
     def execute_instruction(self, next_instruction):
         print 'Proceso' + str(self.assigned_pcb.pid) + ' de prioridad ' + str(self.assigned_pcb.priority) + ' ejecutando en CPU'
-        next_instruction[1].execute()
-        if next_instruction[0]:
+        next_instruction.execute()
+        if self._is_the_last(next_instruction):
             self.kernel.kill_signal(self.assigned_pcb)
             self.assigned_pcb = None
+
+    def _is_the_last(self, instruction):
+        return self.assigned_pcb.program.instructions[-1] == instruction
