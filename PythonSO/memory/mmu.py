@@ -7,7 +7,7 @@ class MMU():
     
     def __init__(self, logical_memory, memory_size):
         self.physical_memory = {} # Memoria fisica: Direccion -> Valor
-        self.logical_memory  = logical_memory # Memoria logica (Solo MVT por ahora)
+        self.logical_memory  = logical_memory # Memoria logica (MVT o Paginacion)
         
         self.init_memory(memory_size)
         self.do_dump_state()
@@ -19,7 +19,7 @@ class MMU():
     
     def do_dump_state(self):
         print 'Estado de memoria'
-        self.logical_memory.do_dump_state(self.physical_memory)
+        self.logical_memory.do_dump_state()
         print 'Memoria principal:'
         for cell, instruction in self.physical_memory.iteritems():
             if instruction is not None:
@@ -40,6 +40,5 @@ class MMU():
         self.logical_memory.unload(pcb, self.physical_memory)
         self.do_dump_state()
         
-    def fetch(self, logical_direction):
-        print 'Memoria buscando en direccion logica ' + str(logical_direction)
-        return self.logical_memory.fetch(logical_direction, self.physical_memory)
+    def fetch(self, pcb):
+        return self.logical_memory.fetch(pcb, self.physical_memory)

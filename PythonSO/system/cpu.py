@@ -21,7 +21,7 @@ class CPU(Thread):
             sleep(2)
 
     def process_pcb(self):
-        next_instruction = self.memory.fetch(self.assigned_pcb.base_direction)
+        next_instruction = self.memory.fetch(self.assigned_pcb)
         if next_instruction.is_cpu():
             # Chequeo para FIFO
             if self.assigned_pcb.quantum is None:

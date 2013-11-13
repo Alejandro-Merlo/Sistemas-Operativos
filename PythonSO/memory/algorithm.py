@@ -16,7 +16,7 @@ class Algorithm():
         pass
     
     @abstractmethod
-    def do_dump_state(self, physical_memory):
+    def do_dump_state(self):
         pass
     
     @abstractmethod
@@ -28,5 +28,5 @@ class Algorithm():
         pass
     
     @abstractmethod
-    def fetch(self, program_direction):
+    def fetch(self, pcb, physical_memory):
         pass

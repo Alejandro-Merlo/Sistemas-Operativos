@@ -18,7 +18,7 @@ class MVT(Algorithm):
         self.empty            = [Block(0, memory_size - 1)] # Lista de bloques vacios
         
         
-    def do_dump_state(self, physical_memory):
+    def do_dump_state(self):
         print 'Bloques vacios:'
         for empty in self.empty:
             print '[' + str(empty.start) + ',' + str(empty.end) + ']'
@@ -33,7 +33,7 @@ class MVT(Algorithm):
     def can_load(self, pcb):
         free_space = self.free_space()
         for block in self.empty:
-            if pcb.limit() <= block.size() or pcb.limit() <= free_space:
+            if pcb.burst <= block.size() or pcb.burst <= free_space:
                 return True
         return False
 
@@ -105,7 +105,7 @@ class MVT(Algorithm):
     def swap_physical(self, ex_start, full_block, physical_memory, pcb):
         # Reacomodo cada instruccion en su nueva entrada correspondiente
         pcb.base_direction = full_block.start
-        for direction in range(0, pcb.limit()):
+        for direction in range(0, pcb.burst):
             physical_memory[pcb.base_direction + direction] = physical_memory[ex_start + direction]
             physical_memory[ex_start + direction]           = None
             
@@ -132,7 +132,7 @@ class MVT(Algorithm):
         # Contemplo el caso en que el nuevo bloque lleno no alcanza a
         # cubrir todo el bloque vacio y el caso en que si alcanza a cubrirlo.
         # En ambos casos reutilizo la informacion del bloque vacio.
-        new_block_size = pcb.limit()
+        new_block_size = pcb.burst
         if new_block_size < block.size():
             new_full_block = Block(block.start, block.start + new_block_size - 1, block.previous, block, False)
             if block.previous is not None:
@@ -156,7 +156,7 @@ class MVT(Algorithm):
         self.unload_physical(pcb, physical_memory)
             
     def unload_physical(self, pcb, physical_memory):
-        for direction in range(pcb.limit()):
+        for direction in range(pcb.burst):
             physical_memory[pcb.base_direction + direction] = None
         pcb.base_direction = None
             
@@ -165,7 +165,7 @@ class MVT(Algorithm):
             if block.previous is None or not block.previous.is_empty:
                 # Ya sea que no tenga ni anterior ni siguiente o que, si los tiene, esten llenos
                 # lo agrego directamente a la lista vacia
-                block.shift    = 0
+                block.offset    = 0
                 block.is_empty = True
                 self.empty.append(block)
             else:
@@ -194,10 +194,11 @@ class MVT(Algorithm):
     ##########################
     # BUSQUEDA
     ##########################
-    def fetch(self, logical_direction, physical_memory):
-        block  = self.search_block_by_start(logical_direction)
-        result = physical_memory[logical_direction + block.shift]
-        block.shift += 1
+    def fetch(self, pcb, physical_memory):
+        print 'Memoria buscando en direccion logica ' + str(pcb.base_direction)
+        block  = self.search_block_by_start(pcb.base_direction)
+        result = physical_memory[pcb.base_direction + block.offset]
+        block.offset += 1
         return result
     
     def search_block_by_start(self, start):

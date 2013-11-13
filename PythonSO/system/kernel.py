@@ -10,10 +10,11 @@ from long_term_scheduler import LongTermScheduler
 from shell import Shell
 from time import sleep
 from memory.mmu import MMU
-from memory.mvt import MVT
+from memory.pagination import Pagination
+#from memory.mvt import MVT
 from irq import IRQ
 from scheduler.prioritary_round_robin import PrioritaryRoundRobin
-from memory.first_fit import FirstFit
+#from memory.first_fit import FirstFit
 #from scheduler.fifo import FIFO
 #from memory.best_fit import BestFit
 #from memory.worst_fit import WorstFit
@@ -25,7 +26,7 @@ class Kernel():
         self.long_term_scheduler = LongTermScheduler(memory)
         self.cpu                 = CPU(self, memory)
         self.io_handler          = IOHandler(self)
-        self.irq                 = IRQ() # Se encarga de manejar las interrupciones
+        self.irq                 = IRQ()
         
         self.cpu.start()
         self.io_handler.start()
@@ -62,11 +63,12 @@ class Kernel():
         
 def main():
     memory_size = 32
+    page_size   = 4
     quantum     = 3
     priorities  = 5
-    agings      = 3
+    aging       = 3
     
-    kernel = Kernel(PrioritaryRoundRobin(quantum, priorities, agings), MMU(MVT(memory_size, FirstFit()), memory_size))
+    kernel = Kernel(PrioritaryRoundRobin(quantum, priorities, aging), MMU(Pagination(memory_size, page_size), memory_size))
     shell  = Shell(kernel)
     shell.start()
     

@@ -5,8 +5,8 @@ Created on 03/11/2013
 '''
 class Frame():
     
-    def __init__(self, size, number, start, end):
+    def __init__(self, size, number, start):
         self.start  = start
-        self.end    = end
+        self.end    = start + size - 1
         self.size   = size
         self.number = number
