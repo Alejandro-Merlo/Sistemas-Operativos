@@ -12,7 +12,9 @@ class LongTermScheduler():
         self.memory        = memory
         self.global_id     = 0
         
-    def create(self, program, kernel):
+    def create(self, program_name, kernel):
+        # Lo busca en HDD
+        program        = kernel.hdd.fetch(program_name)
         process        = PCB(program, self.global_id)
         self.global_id = self.global_id + 1
         self._check_loading(process, kernel)

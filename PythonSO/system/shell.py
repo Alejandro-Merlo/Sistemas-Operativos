@@ -4,9 +4,6 @@ Created on 20/10/2013
 @author: Alejandro
 '''
 from threading import Thread
-from program import Program
-from instruction_cpu import InstructionCPU
-from instruction_io import InstructionIO
 import random
 from time import sleep
 
@@ -17,18 +14,9 @@ class Shell(Thread):
         self.kernel = kernel
         
     def run(self):
-        #number = 1
-        #while True:
-        for e in range(20):
-            instructions = []
-            
-            for i in range(1, random.randint(2, 8)):
-                instructions.append(InstructionCPU('Proceso' + str(e) + ' -> Instruccion CPU' + str(i)))
-                
-            for i in range(1, random.randint(2, 3)):
-                instructions.append(InstructionIO('Proceso' + str(e) + ' -> Instruccion IO' + str(i)))
-                
-            new_program = Program("Program" + str(e), instructions)
-            self.kernel.load(new_program)
-            #number += 1
-            sleep(random.randint(5, 10))
+        while True:
+            # Aca se daria a elegir un programa en vez de elegir al azar
+            program = self.kernel.hdd.programs[random.randint(0, len(self.kernel.hdd.programs) - 1)]
+            program_name = program.name
+            self.kernel.load(program_name)
+            sleep(random.randint(2, 6))

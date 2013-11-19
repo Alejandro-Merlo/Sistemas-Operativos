@@ -10,9 +10,6 @@ class Instruction:
     
     def __init__(self, value):
         self.value = value
-        
-    def execute(self):
-        print self.value
     
     @abstractmethod
     def is_cpu(self):

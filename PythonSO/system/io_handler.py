@@ -23,8 +23,7 @@ class IOHandler(Thread):
             if self.ready_io != []:
                 next_pair          = self.ready_io.pop(0)
                 next_pair[0].state = 'Running I/O'
-                print 'Proceso' + str(next_pair[0].pid) + ' de prioridad ' + str(next_pair[0].priority) + ' ejecutando I/O'
-                next_pair[1][1].execute()
+                print 'IO: ' + next_pair[1][1].value
                 sleep(2)
                 if next_pair[1][0]:
                     self.kernel.kill_signal(next_pair[0])

@@ -39,10 +39,12 @@ class MainWindow(QtGui.QMainWindow):
         options_label       = QtGui.QLabel(self.central_widget)
         options_label.move(10, 0)
         options_label.setText('Opciones')
+        self.form_layout.addWidget(options_label)
         
         dispatcher_label = QtGui.QLabel(self.central_widget)
         dispatcher_label.move(10, 20)
         dispatcher_label.setText('Planificador de corto plazo')
+        self.form_layout.addWidget(dispatcher_label)
         
         self.combo = QtGui.QToolButton(self.central_widget)
         self.combo.setPopupMode(QtGui.QToolButton.MenuButtonPopup)
@@ -59,17 +61,21 @@ class MainWindow(QtGui.QMainWindow):
         self.combo.menu().addAction(rr_opt)
         self.combo.menu().setDefaultAction(fifo_opt)
         self.combo.setText(fifo_opt.text())
+        self.form_layout.addWidget(self.combo)
         
         memory_label = QtGui.QLabel(self.central_widget)
         memory_label.move(10, 80)
         memory_label.setText('Memoria')
+        self.form_layout.addWidget(memory_label)
         
         size_label = QtGui.QLabel(self.central_widget)
         size_label.move(10, 102)
         size_label.setText('Tamanio:')
+        self.form_layout.addWidget(size_label)
         spin_box = QtGui.QSpinBox(self.central_widget)
         spin_box.move(65, 100)
         #spin_box.connect(lambda: self.set_memory_size(50))
+        self.form_layout.addWidget(spin_box)
         
         self.opt_group = QtGui.QButtonGroup(self.central_widget)
         radio1 = QtGui.QRadioButton('MVT con primer ajuste', self.central_widget)
@@ -84,11 +90,14 @@ class MainWindow(QtGui.QMainWindow):
         self.opt_group.addButton(radio1)
         self.opt_group.addButton(radio2)
         self.opt_group.addButton(radio3)
+        self.form_layout.addWidget(radio1)
+        self.form_layout.addWidget(radio2)
+        self.form_layout.addWidget(radio3)
         
-        self.init_buttons()
+        self.init_buttons(self.form_layout)
         self.setCentralWidget(self.central_widget)
 
-    def init_buttons(self):
+    def init_buttons(self, layout):
         start_button = QtGui.QPushButton('Empezar', self.central_widget)
         start_button.move(10, 300)
         quit_button  = QtGui.QPushButton('Salir', self.central_widget)
@@ -99,6 +108,8 @@ class MainWindow(QtGui.QMainWindow):
         quit_button.resize(quit_button.sizeHint())
         quit_button.clicked.connect(QtCore.QCoreApplication.instance().quit)
         
+        layout.addWidget(start_button)
+        layout.addWidget(quit_button)
         #hbox = QtGui.QHBoxLayout()
         #hbox.addStretch(1)
         #hbox.addWidget(start_button)

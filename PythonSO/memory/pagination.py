@@ -109,7 +109,7 @@ class Pagination(Algorithm):
     # BUSQUEDA
     #########################
     def fetch(self, pcb, physical_memory):
-        print 'Memoria buscando en la pagina ' + str(pcb.current_page) + ' con desplazamiento ' + str(pcb.offset)
+        print 'Buscando en pagina: [' + str(pcb.current_page) + ', ' + str(pcb.offset) + ']'
         frame  = self.page_table[pcb.current_page]
         result = physical_memory[frame.start + pcb.offset]
         self._update_current_page(pcb)

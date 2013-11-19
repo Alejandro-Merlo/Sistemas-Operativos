@@ -195,7 +195,7 @@ class MVT(Algorithm):
     # BUSQUEDA
     ##########################
     def fetch(self, pcb, physical_memory):
-        print 'Memoria buscando en direccion logica ' + str(pcb.base_direction)
+        print 'Buscando en direccion logica: [' + str(pcb.base_direction)
         block  = self.search_block_by_start(pcb.base_direction)
         result = physical_memory[pcb.base_direction + block.offset]
         block.offset += 1

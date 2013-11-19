@@ -4,6 +4,8 @@ Created on 14/11/2013
 @author: Alejandro
 '''
 from gui.main_window import MainWindow
+from system.hdd import HDD
+from system.program_loader import ProgramLoader
 from system.shell import Shell
 from system.kernel import Kernel
 from memory.mmu import MMU
@@ -35,6 +37,9 @@ def main():
     
     kernel = Kernel(PrioritaryRoundRobin(quantum, priorities, aging), MMU(Pagination(memory_size, page_size), memory_size))
     #kernel = Kernel(PrioritaryRoundRobin(quantum, priorities, aging), MMU(MVT(memory_size, BestFit()), memory_size))
+    loader = ProgramLoader(kernel.hdd)
+    loader.save_programs()
+    kernel.hdd.show_programs()
     shell  = Shell(kernel)
     shell.start()
     

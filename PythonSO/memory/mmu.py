@@ -31,12 +31,12 @@ class MMU():
         return self.logical_memory.can_load(pcb)
         
     def load(self, pcb):
-        print 'Proceso' + str(pcb.pid) + ' alocandose en memoria'
+        print 'MMU alocando: Proceso' + str(pcb.pid)
         self.logical_memory.load(pcb, self.physical_memory)
         self.do_dump_state()
         
     def unload(self, pcb):
-        print 'Proceso' + str(pcb.pid) + ' desalocandose de la memoria'
+        print 'MMU desalocando: Proceso' + str(pcb.pid)
         self.logical_memory.unload(pcb, self.physical_memory)
         self.do_dump_state()
         
