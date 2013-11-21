@@ -11,11 +11,12 @@ from system.kernel import Kernel
 from memory.mmu import MMU
 from memory.pagination import Pagination
 from memory.mvt import MVT
-from scheduler.prioritary_round_robin import PrioritaryRoundRobin
-#from memory.first_fit import FirstFit
-#from scheduler.fifo import FIFO
+from scheduler.priority_with_round_robin import PriorityWithRoundRobin
+from memory.first_fit import FirstFit
+from scheduler.fifo import FIFO
+from scheduler.sjf import SJF
 from memory.best_fit import BestFit
-#from memory.worst_fit import WorstFit
+from memory.worst_fit import WorstFit
 from time import sleep
 
 import sys
@@ -35,8 +36,11 @@ def main():
     priorities  = 5
     aging       = 3
     
-    kernel = Kernel(PrioritaryRoundRobin(quantum, priorities, aging), MMU(Pagination(memory_size, page_size), memory_size))
-    #kernel = Kernel(PrioritaryRoundRobin(quantum, priorities, aging), MMU(MVT(memory_size, BestFit()), memory_size))
+    #kernel = Kernel(FIFO(), MMU(Pagination(memory_size, page_size), memory_size))
+    #kernel = Kernel(SJF(), MMU(Pagination(memory_size, page_size), memory_size))
+    kernel = Kernel(SJF(), MMU(MVT(memory_size, FirstFit()), memory_size))
+    #kernel = Kernel(PriorityWithRoundRobin(quantum, priorities, aging), MMU(Pagination(memory_size, page_size), memory_size))
+    #kernel = Kernel(PriorityWithRoundRobin(quantum, priorities, aging), MMU(MVT(memory_size, BestFit()), memory_size))
     loader = ProgramLoader(kernel.hdd)
     loader.save_programs()
     kernel.hdd.show_programs()

@@ -18,11 +18,11 @@ class ProgramLoader:
             instructions = []
             
             for i in range(1, random.randint(2, 8)):
-                instructions.append(InstructionCPU('Proceso' + str(e) + ' -> Instruccion CPU' + str(i)))
+                instructions.append(InstructionCPU('Programa' + str(e) + ' -> Instruccion CPU' + str(i)))
                 
             for i in range(1, random.randint(2, 3)):
-                instructions.append(InstructionIO('Proceso' + str(e) + ' -> Instruccion IO' + str(i)))
+                instructions.append(InstructionIO('Programa' + str(e) + ' -> Instruccion IO' + str(i)))
                 
-            new_program = Program("Program" + str(e), instructions)
+            new_program = Program("Programa" + str(e), instructions)
             self.hdd.save(new_program)
         

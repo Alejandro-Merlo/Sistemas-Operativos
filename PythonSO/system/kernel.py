@@ -31,7 +31,7 @@ class Kernel():
     def run_next_process(self):
         process = self.scheduler.choose_next()
         while process is None:
-            sleep(5)
+            sleep(3)
             process = self.scheduler.choose_next()
         
         self.cpu.assigned_pcb = process        

@@ -12,9 +12,8 @@ class SJF(Algorithm):
         
     def add(self, process):
         process.set_priority(0)
-        for proc in self.ready_list:
-            #if process
-            self.ready_list.append(process)
+        self.ready_list.append(process)
+        self.ready_list.sort(key=lambda process: process.burst)
         
     def get(self):
         if self.ready_list == []:
