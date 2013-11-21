@@ -7,7 +7,7 @@ class PCB():
     
     def __init__(self, program, pid):
         self.program         = program # Programa cargado en memoria por el kernel
-        self.burst           = len(self.program.instructions)
+        self.burst           = len(self.program.instructions) # Rafaga del proceso
         self.pid             = pid # ID del proceso
         self.state           = "New" # Estado del proceso (Ready, CPU, Ready I/O, I/O, Timeout, Finished)
         self.base_direction  = None # Se asigna cuando se carga a memoria con asignacion continua. Direccion base
