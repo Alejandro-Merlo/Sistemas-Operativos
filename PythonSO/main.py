@@ -38,12 +38,11 @@ def main():
     
     #kernel = Kernel(FIFO(), MMU(Pagination(memory_size, page_size), memory_size))
     #kernel = Kernel(SJF(), MMU(Pagination(memory_size, page_size), memory_size))
-    kernel = Kernel(SJF(), MMU(MVT(memory_size, FirstFit()), memory_size))
+    #kernel = Kernel(SJF(), MMU(MVT(memory_size, FirstFit()), memory_size))
+    kernel = Kernel(PriorityWithRoundRobin(quantum, priorities, aging), MMU(MVT(memory_size, BestFit()), memory_size))
     #kernel = Kernel(PriorityWithRoundRobin(quantum, priorities, aging), MMU(Pagination(memory_size, page_size), memory_size))
-    #kernel = Kernel(PriorityWithRoundRobin(quantum, priorities, aging), MMU(MVT(memory_size, BestFit()), memory_size))
     loader = ProgramLoader(kernel.hdd)
     loader.save_programs()
-    kernel.hdd.show_programs()
     shell  = Shell(kernel)
     shell.start()
     

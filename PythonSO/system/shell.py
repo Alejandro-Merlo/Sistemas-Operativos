@@ -15,7 +15,8 @@ class Shell(Thread):
         
     def run(self):
         while True:
-            # Aca se daria a elegir un programa en vez de elegir al azar
+            #self.kernel.hdd.show_programs()
+            #program_name = raw_input('Escriba el nombre del programa a ejecutar: ')
             program = self.kernel.hdd.programs[random.randint(0, len(self.kernel.hdd.programs) - 1)]
             program_name = program.name
             self.kernel.load(program_name)

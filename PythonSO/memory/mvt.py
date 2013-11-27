@@ -42,8 +42,8 @@ class MVT(Algorithm):
         if result is not None:
             self._load_result(pcb, physical_memory, result)
         else:
-            self.compact(physical_memory)
-            self._load_result(pcb, physical_memory, self.empty[0])
+            self.compact(physical_memory, pcb.burst)
+            self._load_result(pcb, physical_memory, self.selection_method.select_for(self, pcb))
     
     def free_space(self):
         space = 0
@@ -66,11 +66,11 @@ class MVT(Algorithm):
     #########################
     # COMPACTACION
     #########################
-    def compact(self, physical_memory):
+    def compact(self, physical_memory, burst):
         print 'Memoria haciendo corrimiento de bloques...'
         first = self.first_empty_block()
-        # Se repite hasta quedar un solo bloque vacio al final de la memoria
-        while first.next is not None:
+        # Se repite hasta que el bloque vacio tenga el tamanio suficiente para guardar al proceso
+        while first.size() < burst:
             if not first.next.is_empty:
                 self.swap(first, first.next, physical_memory)
             else:
