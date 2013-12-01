@@ -19,17 +19,7 @@ from memory.best_fit import BestFit
 from memory.worst_fit import WorstFit
 from time import sleep
 
-import sys
-from PyQt4 import QtGui
-
-def main():
-    #app = QtGui.QApplication(sys.argv)
-    
-    #window = MainWindow()
-    #window.show()
-    
-    #sys.exit(app.exec_())
-    
+def main():    
     memory_size = 32
     page_size   = 4
     quantum     = 3
