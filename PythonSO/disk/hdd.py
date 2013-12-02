@@ -7,14 +7,14 @@ class HDD():
     
     def __init__(self, algorithm):
         self.algorithm = algorithm
-        self.map       = {}
+        self.sectors   = {}
         
     def save(self, program):
-        self.algorithm.save(program, self.map)
+        self.algorithm.save(program, self.sectors)
         
     def show_programs(self):
         print 'Programas en disco:'
-        self.algorithm.show(self.map)
+        self.algorithm.show(self.sectors)
                     
     def fetch(self, program_name):
-        self.algorithm.fetch(program_name, self.map)
+        self.algorithm.fetch(program_name, self.sectors)
