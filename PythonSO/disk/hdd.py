@@ -14,7 +14,7 @@ class HDD():
         
     def show_programs(self):
         print 'Programas en disco:'
-        self.algorithm.show(self.sectors)
+        self.algorithm.show()
                     
     def fetch(self, program_name):
         self.algorithm.fetch(program_name, self.sectors)

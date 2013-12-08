@@ -17,7 +17,7 @@ class Algorithm():
         pass
     
     @abstractmethod
-    def show_programs(self, disk_map):
+    def show(self):
         pass
     
     @abstractmethod
