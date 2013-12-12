@@ -165,7 +165,7 @@ class MVT(Algorithm):
             if block.previous is None or not block.previous.is_empty:
                 # Ya sea que no tenga ni anterior ni siguiente o que, si los tiene, esten llenos
                 # lo agrego directamente a la lista vacia
-                block.offset    = 0
+                block.offset   = 0
                 block.is_empty = True
                 self.empty.append(block)
             else:

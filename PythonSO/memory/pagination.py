@@ -116,7 +116,9 @@ class Pagination(Algorithm):
         return result
     
     def _update_current_page(self, pcb):
+        # Si esta al final de la pagina
         if pcb.offset == self.page_size - 1:
+            # Si aun tiene paginas que recorrer
             if pcb.remaining_pages:
                 self._update_next_page(pcb)
         else:

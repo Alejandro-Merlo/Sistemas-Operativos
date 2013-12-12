@@ -11,7 +11,6 @@ class PCB():
         self.pid             = pid # ID del proceso
         self.state           = "New" # Estado del proceso (Ready, CPU, Ready I/O, I/O, Timeout, Finished)
         self.base_direction  = None # Se asigna cuando se carga a memoria con asignacion continua. Direccion base
-        #self.page_table      = None
         self.remaining_pages = None # Se asigna en caso de tener memoria paginada. Numeros de pagina sin ejecutar
         self.current_page    = None # Se asigna en caso de tener memoria paginada. Numero de pagina
         self.offset          = None # Se asigna en caso de tener memoria paginada. Desplazamiento de pagina
