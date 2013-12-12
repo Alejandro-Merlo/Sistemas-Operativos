@@ -3,19 +3,24 @@ Created on 19/10/2013
 
 @author: Alejandro
 '''
-import random 
-class PriorityMap:
-    
+import random
+
+class PriorityMap:    
+
     def __init__(self, priorities_quant, aging_quant):
         self.priorities   = {}
         self.max_priority = priorities_quant
         self.max_aging    = aging_quant
         
+        self._build_priorities_dict()
+
+    def _build_priorities_dict(self):
         self.priorities[0] = {0:[]}
         for p in range(1, self.max_priority):
             new_dict = {}
             for a in range(self.max_aging):
                 new_dict[a] = []
+            
             self.priorities[p] = new_dict
         
     def add(self, process):

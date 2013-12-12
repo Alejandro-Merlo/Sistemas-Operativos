@@ -34,7 +34,6 @@ class CPU(Thread):
                 self.assigned_pcb.quantum -= 1
                 self.execute_instruction(next_instruction)
         else:
-            
             self.kernel.io_signal(self.assigned_pcb, (self._is_the_last(next_instruction), next_instruction))
             self.assigned_pcb = None
 
