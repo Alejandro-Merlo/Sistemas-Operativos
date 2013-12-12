@@ -14,10 +14,12 @@ class Shell(Thread):
         self.kernel = kernel
         
     def run(self):
+        #self.kernel.hdd.show_programs()
         while True:
-            #self.kernel.hdd.show_programs()
-            #program_name = raw_input('Escriba el nombre del programa a ejecutar: ')
-            program = self.kernel.hdd.programs[random.randint(0, len(self.kernel.hdd.programs) - 1)]
-            program_name = program.name
-            self.kernel.load(program_name)
-            sleep(random.randint(2, 6))
+            try:
+                #program_name = raw_input('Escriba el nombre del programa a ejecutar: ')
+                program_name = 'Programa' + str(random.randint(0, self.kernel.hdd.programs_saved() - 1))
+                self.kernel.load(program_name)
+                sleep(random.randint(2, 6))
+            except:
+                print 'Nombre de programa invalido'

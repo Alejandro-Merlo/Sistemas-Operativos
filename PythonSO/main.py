@@ -3,13 +3,14 @@ Created on 14/11/2013
 
 @author: Alejandro
 '''
-from gui.main_window import MainWindow
-from system.hdd import HDD
 from system.program_loader import ProgramLoader
 from system.shell import Shell
 from system.kernel import Kernel
+from disk.inode import INode
 from memory.mmu import MMU
 from memory.pagination import Pagination
+from scheduler.scheduler import Scheduler
+from disk.hdd import HDD
 from memory.mvt import MVT
 from scheduler.priority_with_round_robin import PriorityWithRoundRobin
 from memory.first_fit import FirstFit
@@ -19,18 +20,19 @@ from memory.best_fit import BestFit
 from memory.worst_fit import WorstFit
 from time import sleep
 
-def main():    
+def main():
     memory_size = 32
     page_size   = 4
+    hdd_size    = 1024
     quantum     = 3
     priorities  = 5
     aging       = 3
     
-    #kernel = Kernel(FIFO(), MMU(Pagination(memory_size, page_size), memory_size))
-    #kernel = Kernel(SJF(), MMU(Pagination(memory_size, page_size), memory_size))
-    #kernel = Kernel(SJF(), MMU(MVT(memory_size, FirstFit()), memory_size))
-    kernel = Kernel(PriorityWithRoundRobin(quantum, priorities, aging), MMU(MVT(memory_size, BestFit()), memory_size))
-    #kernel = Kernel(PriorityWithRoundRobin(quantum, priorities, aging), MMU(Pagination(memory_size, page_size), memory_size))
+    #kernel = Kernel(Scheduler(FIFO()), MMU(Pagination(memory_size, page_size), memory_size), HDD(INode(hdd_size)))
+    #kernel = Kernel(Scheduler(SJF()), MMU(Pagination(memory_size, page_size), memory_size), HDD(INode(hdd_size)))
+    #kernel = Kernel(Scheduler(SJF()), MMU(MVT(memory_size, FirstFit()), memory_size), HDD(INode(hdd_size)))
+    kernel = Kernel(Scheduler(PriorityWithRoundRobin(quantum, priorities, aging)), MMU(MVT(memory_size, BestFit()), memory_size), HDD(INode(hdd_size)))
+    #kernel = Kernel(Scheduler(PriorityWithRoundRobin(quantum, priorities, aging)), MMU(Pagination(memory_size, page_size), memory_size), HDD(INode(hdd_size)))
     loader = ProgramLoader(kernel.hdd)
     loader.save_programs()
     shell  = Shell(kernel)

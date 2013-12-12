@@ -4,19 +4,17 @@ Created on 19/10/2013
 @author: Alejandro
 '''
 from cpu import CPU
-from hdd import HDD
 from io_handler import IOHandler
-from scheduler.scheduler import Scheduler
 from long_term_scheduler import LongTermScheduler
 from time import sleep
 from irq import IRQ
 
 class Kernel():
     
-    def __init__(self, scheduler_algorithm = None, memory = None):
-        self.scheduler           = Scheduler(scheduler_algorithm)
+    def __init__(self, dispatcher = None, memory = None, hdd = None):
+        self.scheduler           = dispatcher
         self.long_term_scheduler = LongTermScheduler(memory)
-        self.hdd                 = HDD()
+        self.hdd                 = hdd
         self.cpu                 = CPU(self, memory)
         self.io_handler          = IOHandler(self)
         self.irq                 = IRQ()

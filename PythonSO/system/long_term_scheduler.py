@@ -16,7 +16,7 @@ class LongTermScheduler():
         # Lo busca en HDD
         program        = kernel.hdd.fetch(program_name)
         process        = PCB(program, self.global_id)
-        self.global_id = self.global_id + 1
+        self.global_id += 1
         self._check_loading(process, kernel)
 
     def _check_loading(self, process, kernel):

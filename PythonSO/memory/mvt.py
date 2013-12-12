@@ -53,10 +53,10 @@ class MVT(Algorithm):
 
     def _load_result(self, pcb, physical_memory, result):
         pcb.base_direction = result.start
-        self.load_physical(pcb, physical_memory)
+        self._load_physical(pcb, physical_memory)
         self.divide(pcb, result)
                 
-    def load_physical(self, pcb, physical_memory):
+    def _load_physical(self, pcb, physical_memory):
         direction = pcb.base_direction
         for instruction in pcb.program.instructions:
             physical_memory[direction] = instruction

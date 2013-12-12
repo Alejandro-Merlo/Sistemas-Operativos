@@ -23,3 +23,7 @@ class Algorithm():
     @abstractmethod
     def fetch(self, p_name, disk_map):
         pass
+
+    @abstractmethod
+    def programs_saved(self):
+        pass
