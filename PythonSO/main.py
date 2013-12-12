@@ -28,11 +28,26 @@ def main():
     priorities  = 5
     aging       = 3
     
-    #kernel = Kernel(Scheduler(FIFO()), MMU(Pagination(memory_size, page_size), memory_size), HDD(INode(hdd_size)))
-    #kernel = Kernel(Scheduler(SJF()), MMU(Pagination(memory_size, page_size), memory_size), HDD(INode(hdd_size)))
-    #kernel = Kernel(Scheduler(SJF()), MMU(MVT(memory_size, FirstFit()), memory_size), HDD(INode(hdd_size)))
-    kernel = Kernel(Scheduler(PriorityWithRoundRobin(quantum, priorities, aging)), MMU(MVT(memory_size, BestFit()), memory_size), HDD(INode(hdd_size)))
-    #kernel = Kernel(Scheduler(PriorityWithRoundRobin(quantum, priorities, aging)), MMU(Pagination(memory_size, page_size), memory_size), HDD(INode(hdd_size)))
+    # Variantes del kernel:
+    # 
+    # Planificador: First Come First Serve ; Memoria: Paginacion ; Disco: INodo
+    # kernel = Kernel(Scheduler(FIFO()), MMU(Pagination(memory_size, page_size), memory_size), HDD(INode(hdd_size)))
+    # 
+    # Planificador: Shortest Job First ; Memoria: Paginacion ; Disco: INodo
+    # kernel = Kernel(Scheduler(SJF()), MMU(Pagination(memory_size, page_size), memory_size), HDD(INode(hdd_size)))
+    # 
+    # Planificador: First Come First Serve ; Memoria: Asignacion continua ; Disco: INodo
+    # kernel = Kernel(Scheduler(FIFO()), MMU(MVT(memory_size, FirstFit()), memory_size), HDD(INode(hdd_size)))
+    # 
+    # Planificador: Shortest Job First ; Memoria: Asignacion continua ; Disco: INodo
+    # kernel = Kernel(Scheduler(SJF()), MMU(MVT(memory_size, FirstFit()), memory_size), HDD(INode(hdd_size)))
+    # 
+    # Planificador: Prioridad con Round Robin ; Memoria: Asignacion continua ; Disco: INodo
+    # kernel = Kernel(Scheduler(PriorityWithRoundRobin(quantum, priorities, aging)), MMU(MVT(memory_size, BestFit()), memory_size), HDD(INode(hdd_size)))
+    # 
+    # Planificador: Prioridad con Round Robin ; Memoria: Paginacion ; Disco: INodo
+    kernel = Kernel(Scheduler(PriorityWithRoundRobin(quantum, priorities, aging)), MMU(Pagination(memory_size, page_size), memory_size), HDD(INode(hdd_size)))
+    
     loader = ProgramLoader(kernel.hdd)
     loader.save_programs()
     shell  = Shell(kernel)
