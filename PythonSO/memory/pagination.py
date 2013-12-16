@@ -19,7 +19,8 @@ class Pagination(Algorithm):
         self.empty_frames = [] # Marcos vacios de la memoria fisica
         self.pages        = {} # Paginas que representan la memoria logica
         self.page_table   = {} # Tabla de paginas: Numero de pagina -> Marco
-        self.free_numbers = [] # Numeros de pagina libres 
+        self.free_numbers = [] # Numeros de pagina libres
+        self.stored_pages = [] # Paginas enviadas a disco, no cargadas en memoria
         
         self._create_frames(memory_size, page_size)
             
